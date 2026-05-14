@@ -105,16 +105,55 @@
             <p class="text-xs" style="color: #6d7a77;">Lihat status dan riwayat pengajuan surat Anda</p>
         </a>
 
-        {{-- Surat Pengantar --}}
-        <a href="{{ route('pengajuan.create') }}" class="bg-white rounded-[1.5rem] p-6 lg:p-8 ambient-lift group block">
+        {{-- Download Template --}}
+        <a href="{{ route('warga.template') }}" class="bg-white rounded-[1.5rem] p-6 lg:p-8 ambient-lift group block">
             <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-transform group-hover:scale-110" style="background: linear-gradient(135deg, rgba(65,101,56,0.10), rgba(65,101,56,0.05));">
                 <svg class="w-7 h-7" style="color: #416538;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                 </svg>
             </div>
-            <h3 class="font-manrope font-bold text-base mb-1" style="color: #191c1e;">Surat Pengantar</h3>
-            <p class="text-xs" style="color: #6d7a77;">Minta surat pengantar domisili dan lainnya</p>
+            <h3 class="font-manrope font-bold text-base mb-1" style="color: #191c1e;">Download Template</h3>
+            <p class="text-xs" style="color: #6d7a77;">Unduh template surat, isi sendiri, lalu ajukan ke RT</p>
         </a>
+    </section>
+
+    {{-- ═══════════════════════════════════════════════════════════════
+         ALUR PANDUAN — Cara Mengajukan Surat
+    ═══════════════════════════════════════════════════════════════ --}}
+    <section class="mb-8">
+        <div class="bg-white rounded-[1.5rem] p-6 lg:p-8">
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background: rgba(0,104,93,0.10);">
+                    <svg class="w-4 h-4" style="color:#00685d;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h2 class="font-manrope font-bold text-base" style="color:#191c1e;">Cara Mengajukan Surat ke RT</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold text-white" style="background:linear-gradient(135deg,#00685d,#008376);">1</div>
+                    <div>
+                        <p class="text-sm font-semibold" style="color:#191c1e;">Download Template</p>
+                        <p class="text-xs mt-0.5 leading-relaxed" style="color:#6d7a77;">Unduh template surat yang sesuai kebutuhan dari menu <a href="{{ route('warga.template') }}" class="font-semibold underline" style="color:#00685d;">Template Surat</a>.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold text-white" style="background:linear-gradient(135deg,#2b6485,#3a82a8);">2</div>
+                    <div>
+                        <p class="text-sm font-semibold" style="color:#191c1e;">Isi & Lengkapi Sendiri</p>
+                        <p class="text-xs mt-0.5 leading-relaxed" style="color:#6d7a77;">Isi data diri di template surat secara mandiri, pastikan informasi akurat dan lengkap.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold text-white" style="background:linear-gradient(135deg,#416538,#5a8a4f);">3</div>
+                    <div>
+                        <p class="text-sm font-semibold" style="color:#191c1e;">Upload & Ajukan ke RT</p>
+                        <p class="text-xs mt-0.5 leading-relaxed" style="color:#6d7a77;">Upload surat yang sudah diisi saat <a href="{{ route('pengajuan.create') }}" class="font-semibold underline" style="color:#00685d;">Buat Pengajuan</a>. RT akan TTD & stempel.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
     {{-- ═══════════════════════════════════════════════════════════════
@@ -275,7 +314,7 @@
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold" style="background-color: #c5eeb5; color: #2d4f25;">Selesai</span>
                             </td>
                             <td class="px-8 py-4 text-right">
-                                <a href="#" class="text-xs font-semibold transition-colors hover:text-[#008376]" style="color: #00685d;">Lihat</a>
+                                <button onclick="openSuratModal('Surat Pengantar Domisili','#RT06-8821','20 Jun 2024','Selesai','Surat telah selesai diproses dan dapat diunduh.','selesai')" class="text-xs font-semibold transition-colors hover:text-[#008376]" style="color: #00685d;">Lihat</button>
                             </td>
                         </tr>
 
@@ -295,7 +334,7 @@
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold" style="background-color: #ffdad6; color: #93000a;">Ditolak</span>
                             </td>
                             <td class="px-8 py-4 text-right">
-                                <a href="#" class="text-xs font-semibold transition-colors hover:text-[#008376]" style="color: #00685d;">Lihat</a>
+                                <button onclick="openSuratModal('Surat Keterangan Usaha','#RT06-8790','15 Jun 2024','Ditolak','Pengajuan ditolak karena dokumen pendukung tidak lengkap. Silakan ajukan ulang.','ditolak')" class="text-xs font-semibold transition-colors hover:text-[#008376]" style="color: #00685d;">Lihat</button>
                             </td>
                         </tr>
 
@@ -315,7 +354,7 @@
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold" style="background-color: #c5eeb5; color: #2d4f25;">Selesai</span>
                             </td>
                             <td class="px-8 py-4 text-right">
-                                <a href="#" class="text-xs font-semibold transition-colors hover:text-[#008376]" style="color: #00685d;">Lihat</a>
+                                <button onclick="openSuratModal('Surat Berkelakuan Baik','#RT06-8815','18 Jun 2024','Selesai','Surat telah ditandatangani dan distempel oleh Ketua RT 06.','selesai')" class="text-xs font-semibold transition-colors hover:text-[#008376]" style="color: #00685d;">Lihat</button>
                             </td>
                         </tr>
 
@@ -335,7 +374,7 @@
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold" style="background-color: #c7e7ff; color: #064c6b;">Diproses</span>
                             </td>
                             <td class="px-8 py-4 text-right">
-                                <a href="#" class="text-xs font-semibold transition-colors hover:text-[#008376]" style="color: #00685d;">Lihat</a>
+                                <button onclick="openSuratModal('Surat Keterangan Keluarga','#RT06-8778','10 Jun 2024','Diproses','Surat sedang dalam proses verifikasi oleh Ketua RT 06.','diproses')" class="text-xs font-semibold transition-colors hover:text-[#008376]" style="color: #00685d;">Lihat</button>
                             </td>
                         </tr>
                     </tbody>
@@ -345,9 +384,7 @@
     </section>
     @endif
 
-    {{-- ═══════════════════════════════════════════════════════════════
-         INFO BANNER — Informasi Penting (Stitch)
-    ═══════════════════════════════════════════════════════════════ --}}
+    {{-- INFO BANNER --}}
     <section class="mb-4">
         <div class="rounded-[1.5rem] p-6 lg:p-8" style="background-color: #eceef0;">
             <div class="flex items-start gap-4">
@@ -365,4 +402,105 @@
             </div>
         </div>
     </section>
+
+    {{-- ═══════════════════════════════════════════════════════════════
+         MODAL DETAIL SURAT
+    ═══════════════════════════════════════════════════════════════ --}}
+    <div id="modal-surat" class="fixed inset-0 z-50 hidden items-center justify-center p-4"
+         style="background-color: rgba(25,28,30,0.5); backdrop-filter: blur(4px);">
+        <div class="w-full max-w-md rounded-[1.5rem] shadow-2xl overflow-hidden" style="background-color: #fff;">
+            {{-- Modal Header --}}
+            <div class="flex items-center justify-between px-6 pt-6 pb-4" style="border-bottom: 1px solid #eceef0;">
+                <h2 class="font-manrope font-bold text-base" style="color: #191c1e;">Detail Surat</h2>
+                <button onclick="closeSuratModal()" class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-[#eceef0]">
+                    <svg class="w-4 h-4" style="color: #6d7a77;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            {{-- Modal Body --}}
+            <div class="px-6 py-5 space-y-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium uppercase tracking-widest" style="color: #6d7a77;">Jenis Surat</span>
+                    <span id="modal-nama" class="text-sm font-semibold" style="color: #191c1e;"></span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium uppercase tracking-widest" style="color: #6d7a77;">Nomor ID</span>
+                    <span id="modal-id" class="text-xs font-mono" style="color: #6d7a77;"></span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium uppercase tracking-widest" style="color: #6d7a77;">Tanggal Pengajuan</span>
+                    <span id="modal-tanggal" class="text-sm" style="color: #191c1e;"></span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium uppercase tracking-widest" style="color: #6d7a77;">Status</span>
+                    <span id="modal-status-badge"></span>
+                </div>
+                <div class="rounded-xl p-4" style="background-color: #f2f4f6;">
+                    <p class="text-xs font-medium mb-1" style="color: #6d7a77;">Catatan</p>
+                    <p id="modal-catatan" class="text-sm" style="color: #3d4947;"></p>
+                </div>
+            </div>
+            {{-- Modal Footer --}}
+            <div id="modal-footer" class="px-6 pb-6 flex gap-3">
+                <button onclick="closeSuratModal()" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors" style="background-color: #eceef0; color: #3d4947;">Tutup</button>
+                <a id="modal-download-btn" href="#"
+                   onclick="alert('File dummy — akan diganti dengan file asli saat dokumen tersedia.')"
+                   class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-md"
+                   style="background: linear-gradient(135deg, #00685d, #008376);">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Download Surat
+                </a>
+            </div>
+        </div>
+    </div>
+
+@push('scripts')
+<script>
+const statusStyles = {
+    selesai:  { bg: '#c5eeb5', color: '#2d4f25', label: 'Selesai' },
+    ditolak:  { bg: '#ffdad6', color: '#93000a', label: 'Ditolak' },
+    diproses: { bg: '#c7e7ff', color: '#064c6b', label: 'Sedang Diproses' },
+    menunggu: { bg: '#fff0c2', color: '#7a5800', label: 'Menunggu' },
+};
+
+function openSuratModal(nama, id, tanggal, status, catatan, statusKey) {
+    document.getElementById('modal-nama').textContent    = nama;
+    document.getElementById('modal-id').textContent      = id;
+    document.getElementById('modal-tanggal').textContent = tanggal;
+    document.getElementById('modal-catatan').textContent = catatan;
+
+    const s = statusStyles[statusKey] || statusStyles.menunggu;
+    document.getElementById('modal-status-badge').innerHTML =
+        `<span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold"
+               style="background-color:${s.bg};color:${s.color};">${s.label}</span>`;
+
+    // Show download button only for Selesai/Disetujui
+    const btn = document.getElementById('modal-download-btn');
+    btn.style.display = (statusKey === 'selesai') ? 'inline-flex' : 'none';
+
+    const modal = document.getElementById('modal-surat');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSuratModal() {
+    const modal = document.getElementById('modal-surat');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = '';
+}
+
+document.getElementById('modal-surat').addEventListener('click', function(e) {
+    if (e.target === this) closeSuratModal();
+});
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeSuratModal();
+});
+</script>
+@endpush
+
 @endsection

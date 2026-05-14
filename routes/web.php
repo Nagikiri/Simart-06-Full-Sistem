@@ -16,7 +16,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->middleware('role:warga')->name('dashboard.warga');
 
     Route::get('/dashboard/rt', function () {
-        return view('rt.dashboard');
+        return view('dashboard.rt');
     })->middleware('role:rt')->name('dashboard.rt');
 
     // Redirect to appropriate dashboard

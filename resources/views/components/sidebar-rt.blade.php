@@ -44,15 +44,27 @@
             <span>Pengajuan</span>
         </a>
 
-        {{-- Riwayat (covers Laporan Warga, Warga list, Template) --}}
-        <a href="{{ route('laporan.index') }}"
+        {{-- Template Surat --}}
+        <a href="{{ route('template.index') }}"
            class="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all relative
-                   {{ request()->routeIs('laporan.*') || request()->routeIs('warga.index') || request()->routeIs('template.*') ? 'text-[#00685d] font-semibold' : 'text-[#3d4947] hover:text-[#00685d]' }}"
-           style="{{ request()->routeIs('laporan.*') || request()->routeIs('warga.index') || request()->routeIs('template.*') ? 'background-color: rgba(0,104,93,0.06);' : '' }}">
-            @if(request()->routeIs('laporan.*') || request()->routeIs('warga.index') || request()->routeIs('template.*'))
+                   {{ request()->routeIs('template.*') ? 'text-[#00685d] font-semibold' : 'text-[#3d4947] hover:text-[#00685d]' }}"
+           style="{{ request()->routeIs('template.*') ? 'background-color: rgba(0,104,93,0.06);' : '' }}">
+            @if(request()->routeIs('template.*'))
                 <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full" style="background-color: #00685d;"></span>
             @endif
-            <span class="material-icons-outlined text-xl {{ request()->routeIs('laporan.*') || request()->routeIs('warga.index') || request()->routeIs('template.*') ? 'text-[#00685d]' : 'text-[#6d7a77] group-hover:text-[#00685d]' }}">history</span>
+            <span class="material-icons-outlined text-xl {{ request()->routeIs('template.*') ? 'text-[#00685d]' : 'text-[#6d7a77] group-hover:text-[#00685d]' }}">description</span>
+            <span>Template Surat</span>
+        </a>
+
+        {{-- Riwayat --}}
+        <a href="{{ route('laporan.index') }}"
+           class="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all relative
+                   {{ request()->routeIs('laporan.*') || request()->routeIs('warga.index') ? 'text-[#00685d] font-semibold' : 'text-[#3d4947] hover:text-[#00685d]' }}"
+           style="{{ request()->routeIs('laporan.*') || request()->routeIs('warga.index') ? 'background-color: rgba(0,104,93,0.06);' : '' }}">
+            @if(request()->routeIs('laporan.*') || request()->routeIs('warga.index'))
+                <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full" style="background-color: #00685d;"></span>
+            @endif
+            <span class="material-icons-outlined text-xl {{ request()->routeIs('laporan.*') || request()->routeIs('warga.index') ? 'text-[#00685d]' : 'text-[#6d7a77] group-hover:text-[#00685d]' }}">history</span>
             <span>Riwayat</span>
         </a>
 

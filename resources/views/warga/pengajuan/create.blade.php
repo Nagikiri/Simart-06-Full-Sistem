@@ -123,9 +123,32 @@
                             </svg>
                         </div>
                         <div>
-                            <h2 class="font-manrope font-bold text-base" style="color: #191c1e;">Lampiran Dokumen</h2>
-                            <p class="text-xs" style="color: #6d7a77;">Upload KTP, KK, atau dokumen pendukung</p>
+                            <h2 class="font-manrope font-bold text-base" style="color: #191c1e;">Upload Surat yang Sudah Diisi</h2>
+                            <p class="text-xs" style="color: #6d7a77;">Download template → isi sendiri → upload di sini</p>
                         </div>
+                    </div>
+
+                    {{-- Template Download Banner (Kontekstual) --}}
+                    <div id="templateBanner" class="hidden mb-4 rounded-xl p-4 flex items-center gap-4"
+                         style="background: linear-gradient(135deg, rgba(0,104,93,0.06), rgba(0,131,118,0.04)); border: 1.5px solid rgba(0,104,93,0.15);">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background: rgba(0,104,93,0.12);">
+                            <svg class="w-4 h-4" style="color:#00685d;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-semibold" style="color:#191c1e;">Belum punya templatenya?</p>
+                            <p id="bannerDesc" class="text-xs mt-0.5" style="color:#6d7a77;">Download dulu, isi sendiri, baru upload di bawah.</p>
+                        </div>
+                        <a id="bannerDownloadBtn" href="#"
+                           onclick="alert('File dummy — template akan tersedia saat RT mengunggah dokumen asli.')"
+                           class="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white hover:shadow-md transition-all"
+                           style="background: linear-gradient(135deg, #00685d, #008376);">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            Download Template
+                        </a>
                     </div>
 
                     {{-- Drag & Drop Zone --}}
@@ -373,6 +396,7 @@ document.addEventListener('DOMContentLoaded', function () {
             label.style.borderColor = '#00685d';
             label.style.backgroundColor = 'rgba(0,104,93,0.03)';
             label.querySelector('.surat-check').style.opacity = '1';
+            showTemplateBanner(radio.value);
         }
 
         label.addEventListener('click', () => {
@@ -386,9 +410,26 @@ document.addEventListener('DOMContentLoaded', function () {
             label.style.borderColor = '#00685d';
             label.style.backgroundColor = 'rgba(0,104,93,0.03)';
             label.querySelector('.surat-check').style.opacity = '1';
+            showTemplateBanner(radio.value);
         });
     });
 });
+
+function showTemplateBanner(value) {
+    const names = {
+        domisili:    'Surat Keterangan Domisili',
+        usaha:       'Surat Keterangan Usaha',
+        tidak_mampu: 'Surat Keterangan Tidak Mampu',
+        pengantar:   'Surat Pengantar Umum',
+    };
+    const banner = document.getElementById('templateBanner');
+    const desc   = document.getElementById('bannerDesc');
+    if (names[value]) {
+        desc.textContent = `Download template "${names[value]}", isi sendiri, lalu upload di area bawah.`;
+        banner.classList.remove('hidden');
+        banner.classList.add('flex');
+    }
+}
 
 // ═══ File Select Preview ═══
 function handleFileSelect(input) {
