@@ -23,23 +23,15 @@
 
         <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
             <div class="max-w-3xl">
-                {{-- Trust badge --}}
-                <div class="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-soft mb-8 animate-fade-in-up pulse-subtle">
-                    <svg class="w-4 h-4 text-civic-primary" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                    </svg>
-                    <span class="text-xs font-semibold text-civic-primary tracking-wide uppercase" style="letter-spacing: 0.05rem;">Secure & Private</span>
-                </div>
-
                 {{-- Headline --}}
                 <h1 class="font-manrope font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white leading-tight mb-6 animate-fade-in-up animation-delay-100">
                     Selamat Datang di<br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r" style="--tw-gradient-from: #6ee7b7; --tw-gradient-to: #5eead4; background-image: linear-gradient(to right, #6ee7b7, #5eead4);">SIMART-06</span>
+                    <span class="text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #00AA13, #38e54d); padding-bottom: 5px; display: inline-block;">SIMART-06</span>
                 </h1>
 
                 {{-- Subheadline --}}
                 <p class="text-lg lg:text-xl text-white/80 leading-relaxed mb-10 max-w-2xl animate-fade-in-up animation-delay-200">
-                    Website Rukun Tetangga 006 Balikpapan untuk membantu mengelola administrasi warga.
+                    Website layanan administrasi digital untuk mempermudah urusan surat-menyurat warga. Cepat, transparan, dan tanpa antre.
                 </p>
 
                 {{-- CTA Buttons --}}
@@ -77,50 +69,46 @@
                 </p>
             </div>
 
-            {{-- Benefits Grid — Asymmetric (65/35 pattern) --}}
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {{-- Benefits Grid — Symmetrical: 2 Top Cards (Equal), 1 Bottom Card (Full Width & Centered) --}}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                {{-- Card 1: Effortless Requests (larger) --}}
-                <div class="lg:col-span-7 bg-civic-surface-lowest rounded-civic-xl p-8 lg:p-10 ambient-lift cursor-default group">
-                    <div class="w-12 h-12 rounded-civic-lg bg-gradient-to-br from-civic-primary/10 to-brand-teal/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6 text-civic-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {{-- Card 1: Pengajuan Surat Digital (Top Left) --}}
+                <div class="bg-civic-surface-lowest rounded-civic-xl p-8 lg:p-10 ambient-lift cursor-default group text-center">
+                    <div class="w-16 h-16 mx-auto rounded-civic-xl bg-gradient-to-br from-civic-primary/10 to-brand-teal/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8 text-civic-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>
                     </div>
-                    <h3 class="font-manrope font-bold text-xl text-civic-on-surface mb-3">Urus Surat Jadi Mudah</h3>
-                    <p class="text-civic-on-surface-variant leading-relaxed">
-                        Butuh surat pengantar atau domisili? Ajukan langsung dari HP tanpa perlu bolak-balik ke rumah pengurus
+                    <h3 class="font-manrope font-bold text-xl text-civic-on-surface mb-3">Pengajuan Surat Tanpa Antre</h3>
+                    <p class="text-civic-on-surface-variant leading-relaxed text-sm text-justify">
+                        Proses pembuatan berbagai macam surat pernyataan dan keterangan kini dapat dilakukan sepenuhnya secara digital. Anda cukup memilih jenis layanan surat yang tersedia, melengkapi form dari perangkat Anda, dan sistem akan mengirimkannya langsung ke Ketua RT untuk diverifikasi.
                     </p>
                 </div>
 
-                {{-- Card 2: Real-time Tracking --}}
-                <div class="lg:col-span-5 bg-civic-surface-lowest rounded-civic-xl p-8 lg:p-10 ambient-lift cursor-default group">
-                    <div class="w-12 h-12 rounded-civic-lg bg-gradient-to-br from-brand-blue/10 to-brand-blue/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {{-- Card 2: Pantau Progres Real-Time (Top Right) --}}
+                <div class="bg-civic-surface-lowest rounded-civic-xl p-8 lg:p-10 ambient-lift cursor-default group text-center">
+                    <div class="w-16 h-16 mx-auto rounded-civic-xl bg-gradient-to-br from-brand-blue/10 to-brand-blue/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
-                    <h3 class="font-manrope font-bold text-xl text-civic-on-surface mb-3">Pantau Status</h3>
-                    <p class="text-civic-on-surface-variant leading-relaxed">
-                        Cek progres pengajuan Anda secara real-time. Anda akan menerima notifikasi otomatis saat surat sudah siap diambil atau ditandatangani.
+                    <h3 class="font-manrope font-bold text-xl text-civic-on-surface mb-3">Lacak Status Real-Time</h3>
+                    <p class="text-civic-on-surface-variant leading-relaxed text-sm text-justify">
+                        Anda tidak perlu lagi ke rumah Ketua RT untuk sekadar menanyakan progres surat. Terdapat fitur Riwayat yang interaktif dengan indikator visual step-by-step, memungkinkan Anda melihat apakah dokumen sedang direview, telah disetujui, atau sudah bisa diunduh secara online kapanpun.
                     </p>
                 </div>
 
-                {{-- Card 3: Digital Transparency (full width) --}}
-                <div class="lg:col-span-12 bg-civic-surface-lowest rounded-civic-xl p-8 lg:p-10 ambient-lift cursor-default group">
-                    <div class="lg:flex lg:items-start lg:gap-8">
-                        <div class="w-12 h-12 rounded-civic-lg bg-gradient-to-br from-brand-green/15 to-brand-green/5 flex items-center justify-center mb-6 lg:mb-0 flex-shrink-0 group-hover:scale-110 transition-transform">
-                            <svg class="w-6 h-6 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="font-manrope font-bold text-xl text-civic-on-surface mb-3">Info Terkini</h3>
-                            <p class="text-civic-on-surface-variant leading-relaxed max-w-2xl">
-                                Akses pengumuman warga, jadwal kerja bakti, hingga agenda lingkungan terbaru agar tidak ketinggalan informasi penting.
-                            </p>
-                        </div>
+                {{-- Card 3: Integrasi Data Warga & Template Dokumen (Bottom Centered, Full Width) --}}
+                <div class="lg:col-span-2 bg-civic-surface-lowest rounded-civic-xl p-10 lg:p-14 ambient-lift cursor-default group text-center">
+                    <div class="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-brand-green/15 to-brand-green/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-10 h-10 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
                     </div>
+                    <h3 class="font-manrope font-bold text-2xl text-civic-on-surface mb-4">Manajemen Data Sentral & Sinkronisasi Otomatis</h3>
+                    <p class="text-civic-on-surface-variant leading-relaxed max-w-3xl mx-auto text-justify">
+                        SIMART-06 dirancang dengan arsitektur data dinamis yang mana seluruh format dan template persuratan dikelola langsung oleh Ketua RT melalui Dashboard terpusat. Apabila terdapat pembaruan terkait format maupun persyaratan, perubahan akan otomatis terefleksi ke seluruh akun Warga sehingga memastikan semua permohonan selalu sesuai dengan kebijakan lingkungan dan kelurahan terbaru.
+                    </p>
                 </div>
             </div>
         </div>
@@ -133,58 +121,73 @@
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
             {{-- Section Header --}}
             <div class="text-center mb-16">
-                <span class="text-xs font-semibold text-civic-primary tracking-widest uppercase mb-3 block" style="letter-spacing: 0.08rem;">Service Portal</span>
+                <span class="text-xs font-semibold text-civic-primary tracking-widest uppercase mb-3 block" style="letter-spacing: 0.08rem;">Layanan Surat</span>
                 <h2 class="font-manrope font-bold text-3xl lg:text-4xl text-civic-on-surface mb-4">
-                    Access all essential neighborhood documents<br class="hidden lg:block"> through our curated digital desk.
+                    Jenis Surat yang Tersedia
                 </h2>
+                <p class="text-civic-on-surface-variant text-base max-w-xl mx-auto">
+                    Berikut adalah jenis-jenis surat pernyataan yang dapat Anda ajukan secara digital langsung dari rumah, tanpa perlu antre ke Ketua RT.
+                </p>
             </div>
 
             {{-- Service Cards Grid --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
 
-                {{-- Surat Domisili --}}
-                <div class="bg-civic-surface-lowest rounded-civic-xl p-8 ambient-lift cursor-default group text-center">
-                    <div class="w-16 h-16 mx-auto rounded-civic-xl bg-gradient-to-br from-civic-primary/10 to-civic-primary/5 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                        <svg class="w-8 h-8 text-civic-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {{-- 1. Surat Pernyataan Belum Pernah Menikah --}}
+                <div class="bg-civic-surface-lowest rounded-civic-xl p-6 ambient-lift cursor-default group text-center flex flex-col justify-between">
+                    <div class="w-14 h-14 mx-auto rounded-civic-xl bg-gradient-to-br from-civic-primary/10 to-civic-primary/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7 text-civic-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                    </div>
+                    <span class="font-manrope font-bold text-sm text-civic-primary block mb-2 leading-snug">Pernyataan Belum Pernah Menikah</span>
+                    <p class="text-[11px] text-civic-on-surface-variant">Layanan administrasi status pernikahan</p>
+                </div>
+
+                {{-- 2. Surat Pernyataan Berpenghasilan Tidak Tetap --}}
+                <div class="bg-civic-surface-lowest rounded-civic-xl p-6 ambient-lift cursor-default group text-center flex flex-col justify-between">
+                    <div class="w-14 h-14 mx-auto rounded-civic-xl bg-gradient-to-br from-brand-blue/10 to-brand-blue/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <span class="font-manrope font-bold text-sm text-brand-blue block mb-2 leading-snug">Pernyataan Berpenghasilan Tidak Tetap</span>
+                    <p class="text-[11px] text-civic-on-surface-variant">Surat keterangan ekonomi dan pendapatan</p>
+                </div>
+
+                {{-- 3. Surat Pernyataan Jaminan Bertempat Tinggal --}}
+                <div class="bg-civic-surface-lowest rounded-civic-xl p-6 ambient-lift cursor-default group text-center flex flex-col justify-between">
+                    <div class="w-14 h-14 mx-auto rounded-civic-xl bg-gradient-to-br from-brand-green/10 to-brand-green/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                         </svg>
                     </div>
-                    <span class="font-manrope font-bold text-2xl text-civic-primary block mb-1">Domisili</span>
-                    <p class="text-sm text-civic-on-surface-variant">Certificate of Residence</p>
+                    <span class="font-manrope font-bold text-sm text-brand-green block mb-2 leading-snug">Pernyataan Jaminan Bertempat Tinggal</span>
+                    <p class="text-[11px] text-civic-on-surface-variant">Layanan bukti validitas domisili</p>
                 </div>
 
-                {{-- Surat Usaha --}}
-                <div class="bg-civic-surface-lowest rounded-civic-xl p-8 ambient-lift cursor-default group text-center">
-                    <div class="w-16 h-16 mx-auto rounded-civic-xl bg-gradient-to-br from-brand-blue/10 to-brand-blue/5 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                        <svg class="w-8 h-8 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.193 23.193 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                {{-- 4. Surat Pernyataan Gaib --}}
+                <div class="bg-civic-surface-lowest rounded-civic-xl p-6 ambient-lift cursor-default group text-center flex flex-col justify-between">
+                    <div class="w-14 h-14 mx-auto rounded-civic-xl bg-gradient-to-br from-purple-500/10 to-purple-500/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                         </svg>
                     </div>
-                    <span class="font-manrope font-bold text-2xl text-brand-blue block mb-1">Usaha</span>
-                    <p class="text-sm text-civic-on-surface-variant">Business Permit Letters</p>
+                    <span class="font-manrope font-bold text-sm text-purple-600 block mb-2 leading-snug">Pernyataan Gaib (Ditinggal)</span>
+                    <p class="text-[11px] text-civic-on-surface-variant">Surat pernyataan ditinggal pergi pasangan</p>
                 </div>
 
-                {{-- Surat Keluarga --}}
-                <div class="bg-civic-surface-lowest rounded-civic-xl p-8 ambient-lift cursor-default group text-center">
-                    <div class="w-16 h-16 mx-auto rounded-civic-xl bg-gradient-to-br from-brand-green/10 to-brand-green/5 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                        <svg class="w-8 h-8 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                {{-- 5. SPTJM Kematian --}}
+                <div class="bg-civic-surface-lowest rounded-civic-xl p-6 ambient-lift cursor-default group text-center flex flex-col justify-between">
+                    <div class="w-14 h-14 mx-auto rounded-civic-xl bg-gradient-to-br from-amber-500/10 to-amber-500/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>
                     </div>
-                    <span class="font-manrope font-bold text-2xl text-brand-green block mb-1">Keluarga</span>
-                    <p class="text-sm text-civic-on-surface-variant">Family Administration</p>
+                    <span class="font-manrope font-bold text-sm text-amber-600 block mb-2 leading-snug">SPTJM Kebenaran Data Kematian</span>
+                    <p class="text-[11px] text-civic-on-surface-variant">Pernyataan mutlak validasi data</p>
                 </div>
 
-                {{-- Surat Karakter --}}
-                <div class="bg-civic-surface-lowest rounded-civic-xl p-8 ambient-lift cursor-default group text-center">
-                    <div class="w-16 h-16 mx-auto rounded-civic-xl bg-gradient-to-br from-amber-500/10 to-amber-500/5 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                        <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
-                    </div>
-                    <span class="font-manrope font-bold text-2xl text-amber-600 block mb-1">Karakter</span>
-                    <p class="text-sm text-civic-on-surface-variant">Good Conduct Statement</p>
-                </div>
             </div>
 
             {{-- Warga quick-action link --}}

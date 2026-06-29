@@ -16,6 +16,71 @@
     {{-- Right: User Profile --}}
     <div class="flex items-center gap-4">
         @auth
+            @php
+                $userRole = auth()->user()->role ?? 'warga';
+                // For RT: load latest incoming pengajuan from warga
+                // For Warga: load own pengajuan activity
+                if ($userRole === 'rt') {
+                    $notifItems = \App\Models\Pengajuan::with('warga')
+                        ->orderBy('created_at', 'desc')
+                        ->take(5)
+                        ->get()
+                        ->map(function ($p) {
+                            return [
+                                'title'  => 'Pengajuan masuk: ' . $p->jenis_surat,
+                                'sub'    => ($p->warga->nama ?? 'Warga') . ' — ' . $p->created_at->diffForHumans(),
+                                'color'  => $p->status === 'pending' ? '#ba1a1a' : '#00685d',
+                                'unread' => $p->status === 'pending',
+                            ];
+                        });
+                } else {
+                    $notifItems = collect();
+                    if (auth()->user()->warga) {
+                        $pengajuanNotifs = auth()->user()->warga->pengajuan()
+                            ->orderBy('updated_at', 'desc')
+                            ->take(3)
+                            ->get()
+                            ->map(function ($p) {
+                                $label = match ($p->status) {
+                                    'selesai'  => 'Surat disetujui & siap diambil',
+                                    'ditolak'  => 'Pengajuan ditolak',
+                                    'diproses' => 'Pengajuan sedang diproses',
+                                    default    => 'Pengajuan diterima sistem',
+                                };
+                                $color = match ($p->status) {
+                                    'selesai'  => '#416538',
+                                    'ditolak'  => '#ba1a1a',
+                                    'diproses' => '#2b6485',
+                                    default    => '#00685d',
+                                };
+                                return [
+                                    'title'  => $label,
+                                    'sub'    => $p->jenis_surat . ' — ' . $p->updated_at->diffForHumans(),
+                                    'color'  => $color,
+                                    'unread' => in_array($p->status, ['selesai', 'ditolak', 'diproses']),
+                                    'timestamp' => $p->updated_at,
+                                ];
+                            });
+
+                        $pengumumanNotifs = \App\Models\Pengumuman::orderBy('created_at', 'desc')
+                            ->take(2)
+                            ->get()
+                            ->map(function ($p) {
+                                return [
+                                    'title'  => '📢 ' . $p->judul,
+                                    'sub'    => 'Pengumuman RT — ' . $p->created_at->diffForHumans(),
+                                    'color'  => '#2b6485',
+                                    'unread' => true,
+                                    'timestamp' => $p->created_at,
+                                ];
+                            });
+
+                        $notifItems = $pengajuanNotifs->concat($pengumumanNotifs)->sortByDesc('timestamp')->take(5);
+                    }
+                }
+                $unreadCount = $notifItems->where('unread', true)->count();
+            @endphp
+
             {{-- ── Notification Bell + Dropdown ──────────────────────── --}}
             <div class="relative" id="notif-wrapper">
                 <button id="notif-btn"
@@ -26,10 +91,16 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                               d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                     </svg>
-                    {{-- Unread badge --}}
-                    <span id="notif-badge"
-                          class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full"
-                          style="background-color: #ba1a1a;"></span>
+                    {{-- Unread badge — only shown when there are unread items --}}
+                    @if($unreadCount > 0)
+                        <span id="notif-badge"
+                              class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full"
+                              style="background-color: #ba1a1a;"></span>
+                    @else
+                        <span id="notif-badge"
+                              class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full hidden"
+                              style="background-color: #ba1a1a;"></span>
+                    @endif
                 </button>
 
                 {{-- Dropdown Panel --}}
@@ -41,58 +112,46 @@
                     <div class="flex items-center justify-between px-5 pt-4 pb-3"
                          style="border-bottom: 1px solid #eceef0;">
                         <h3 class="font-manrope font-bold text-sm" style="color: #191c1e;">Notifikasi</h3>
-                        <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full"
-                              style="background-color: #ffdad6; color: #93000a;">3 Baru</span>
+                        @if($unreadCount > 0)
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                                  style="background-color: #ffdad6; color: #93000a;">{{ $unreadCount }} Baru</span>
+                        @else
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                                  style="background-color: #eceef0; color: #6d7a77;">0 Baru</span>
+                        @endif
                     </div>
 
                     {{-- Notification Items --}}
                     <div class="divide-y" style="divide-color: #f2f4f6;">
-
-                        {{-- Item 1 — Unread --}}
-                        <div class="flex gap-3 px-5 py-3 cursor-pointer transition-colors hover:bg-[#f2f4f6]">
-                            <div class="mt-1 w-2 h-2 rounded-full flex-shrink-0" style="background-color: #00685d;"></div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-semibold" style="color: #191c1e;">Pengajuan baru masuk</p>
-                                <p class="text-xs mt-0.5" style="color: #6d7a77;">Budi Santoso — Surat Domisili</p>
-                                <p class="text-[11px] mt-1" style="color: #bcc9c6;">2 menit yang lalu</p>
+                        @forelse($notifItems as $notif)
+                            <div class="flex gap-3 px-5 py-3 cursor-pointer transition-colors hover:bg-[#f2f4f6]"
+                                 @if(!$notif['unread']) style="opacity: 0.65;" @endif>
+                                <div class="mt-1 w-2 h-2 rounded-full flex-shrink-0"
+                                     style="background-color: {{ $notif['color'] }};"></div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm {{ $notif['unread'] ? 'font-semibold' : 'font-medium' }}" style="color: #191c1e;">{{ $notif['title'] }}</p>
+                                    <p class="text-xs mt-0.5 truncate" style="color: #6d7a77;">{{ $notif['sub'] }}</p>
+                                </div>
                             </div>
-                        </div>
-
-                        {{-- Item 2 — Unread --}}
-                        <div class="flex gap-3 px-5 py-3 cursor-pointer transition-colors hover:bg-[#f2f4f6]">
-                            <div class="mt-1 w-2 h-2 rounded-full flex-shrink-0" style="background-color: #2b6485;"></div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-semibold" style="color: #191c1e;">Surat Anda telah disetujui</p>
-                                <p class="text-xs mt-0.5" style="color: #6d7a77;">Surat Keterangan Berkelakuan Baik</p>
-                                <p class="text-[11px] mt-1" style="color: #bcc9c6;">1 jam yang lalu</p>
+                        @empty
+                            <div class="flex flex-col items-center justify-center px-5 py-8 text-center">
+                                <svg class="w-8 h-8 mb-2" style="color: #bcc9c6;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                </svg>
+                                <p class="text-xs font-medium" style="color: #6d7a77;">Belum ada notifikasi</p>
                             </div>
-                        </div>
-
-                        {{-- Item 3 — Unread --}}
-                        <div class="flex gap-3 px-5 py-3 cursor-pointer transition-colors hover:bg-[#f2f4f6]">
-                            <div class="mt-1 w-2 h-2 rounded-full flex-shrink-0" style="background-color: #ba1a1a;"></div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-semibold" style="color: #191c1e;">Aduan warga baru</p>
-                                <p class="text-xs mt-0.5" style="color: #6d7a77;">Jalan rusak Blok H perlu ditangani</p>
-                                <p class="text-[11px] mt-1" style="color: #bcc9c6;">3 jam yang lalu</p>
-                            </div>
-                        </div>
-
-                        {{-- Item 4 — Read --}}
-                        <div class="flex gap-3 px-5 py-3 cursor-pointer transition-colors hover:bg-[#f2f4f6]" style="opacity: 0.6;">
-                            <div class="mt-1 w-2 h-2 rounded-full flex-shrink-0" style="background-color: #bcc9c6;"></div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium" style="color: #191c1e;">Pengumuman Kerja Bakti</p>
-                                <p class="text-xs mt-0.5" style="color: #6d7a77;">Minggu, 18 Mei 2026 pukul 07.00</p>
-                                <p class="text-[11px] mt-1" style="color: #bcc9c6;">Kemarin</p>
-                            </div>
-                        </div>
+                        @endforelse
                     </div>
 
                     {{-- Footer --}}
                     <div class="px-5 py-3 text-center" style="border-top: 1px solid #eceef0;">
-                        <a href="#" class="text-xs font-semibold transition-colors hover:text-[#008376]"
-                           style="color: #00685d;">Lihat Semua Notifikasi →</a>
+                        @if($userRole === 'rt')
+                            <a href="{{ route('verifikasi.index') }}" class="text-xs font-semibold transition-colors hover:text-[#008376]"
+                               style="color: #00685d;">Lihat Semua Pengajuan →</a>
+                        @else
+                            <a href="{{ route('warga.riwayat') }}" class="text-xs font-semibold transition-colors hover:text-[#008376]"
+                               style="color: #00685d;">Lihat Semua Riwayat →</a>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -154,3 +213,4 @@ document.addEventListener('keydown', function(e) {
     }
 });
 </script>
+

@@ -9,7 +9,7 @@
     <div class="flex justify-between items-start mb-8">
         <div>
             <h1 class="font-manrope font-bold text-2xl" style="color: #191c1e;">Dashboard Ketua RT</h1>
-            <p class="text-sm mt-1" style="color: #6d7a77;">Senin, 12 Mei 2026 — RT 06</p>
+            <p class="text-sm mt-1" style="color: #6d7a77;" id="rt-date-display">RT 06</p>
         </div>
         <button onclick="openPengumumanModal()"
                 class="inline-flex items-center gap-2 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-all hover:shadow-md"
@@ -21,6 +21,28 @@
         </button>
     </div>
 
+@php
+    // Hitung hanya warga dengan role='warga', exclude RT
+    $totalWarga = \App\Models\Warga::where('role', 'warga')->count();
+    $menunggu = \App\Models\Pengajuan::where('status', 'pending')->count();
+    $suratTerbit = \App\Models\Surat::count();
+    $aduanAktif = 0;
+    
+    // Demografi berdasarkan gender real dari database
+    $wargaLaki = \App\Models\Warga::where('role', 'warga')->where('gender', 'Laki-laki')->count();
+    $wargaPerempuan = \App\Models\Warga::where('role', 'warga')->where('gender', 'Perempuan')->count();
+    $persen_laki = $totalWarga > 0 ? round(($wargaLaki / $totalWarga) * 100) : 0;
+    $persen_perempuan = $totalWarga > 0 ? round(($wargaPerempuan / $totalWarga) * 100) : 0;
+    
+    $latestPengajuan = \App\Models\Pengajuan::with('warga')->orderBy('created_at', 'desc')->take(4)->get();
+    
+    $domisiliCount = \App\Models\Pengajuan::where('jenis_surat', 'domisili')->count();
+    $skuCount = \App\Models\Pengajuan::where('jenis_surat', 'usaha')->count();
+    $sktmCount = \App\Models\Pengajuan::where('jenis_surat', 'tidak_mampu')->count();
+    $pengantarCount = \App\Models\Pengajuan::where('jenis_surat', 'pengantar')->count();
+    $totalPengajuan = $domisiliCount + $skuCount + $sktmCount + $pengantarCount;
+@endphp
+
     {{-- Quick Stats --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
         <div class="bg-white rounded-[1.5rem] p-6 ambient-lift">
@@ -29,9 +51,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 8.048M3 20.585a6 6 0 0112 0M15 12a4 4 0 110-8m6 8a6 6 0 01-12 0"/>
                 </svg>
             </div>
-            <p class="font-manrope font-bold text-3xl" style="color:#191c1e;">248</p>
+            <p class="font-manrope font-bold text-3xl" style="color:#191c1e;">{{ $totalWarga }}</p>
             <p class="text-xs uppercase tracking-widest mt-1" style="color:#6d7a77;">Total Warga</p>
-            <p class="text-xs mt-1" style="color:#00685d;">+3 bulan ini</p>
+            <p class="text-xs mt-1" style="color:#00685d;">Terdaftar aktif</p>
         </div>
         <div class="bg-white rounded-[1.5rem] p-6 ambient-lift">
             <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background: rgba(186,26,26,0.08);">
@@ -39,9 +61,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
             </div>
-            <p class="font-manrope font-bold text-3xl" style="color:#191c1e;">12</p>
+            <p class="font-manrope font-bold text-3xl" style="color:#191c1e;">{{ $menunggu }}</p>
             <p class="text-xs uppercase tracking-widest mt-1" style="color:#6d7a77;">Menunggu</p>
-            <p class="text-xs mt-1" style="color:#ba1a1a;">Perlu ditindaklanjuti</p>
+            <p class="text-xs mt-1" style="color:#ba1a1a;">Perlu verifikasi</p>
         </div>
         <div class="bg-white rounded-[1.5rem] p-6 ambient-lift">
             <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background: rgba(65,101,56,0.10);">
@@ -49,9 +71,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                 </svg>
             </div>
-            <p class="font-manrope font-bold text-3xl" style="color:#191c1e;">87</p>
+            <p class="font-manrope font-bold text-3xl" style="color:#191c1e;">{{ $suratTerbit }}</p>
             <p class="text-xs uppercase tracking-widest mt-1" style="color:#6d7a77;">Surat Terbit</p>
-            <p class="text-xs mt-1" style="color:#6d7a77;">April 2026</p>
+            <p class="text-xs mt-1" style="color:#6d7a77;">Selesai diproses</p>
         </div>
         <div class="bg-white rounded-[1.5rem] p-6 ambient-lift">
             <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background: rgba(43,100,133,0.10);">
@@ -59,9 +81,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4v2m0-8h2m-2 0h-2"/>
                 </svg>
             </div>
-            <p class="font-manrope font-bold text-3xl" style="color:#191c1e;">3</p>
+            <p class="font-manrope font-bold text-3xl" style="color:#191c1e;">{{ $aduanAktif }}</p>
             <p class="text-xs uppercase tracking-widest mt-1" style="color:#6d7a77;">Aduan Aktif</p>
-            <p class="text-xs mt-1" style="color:#ba1a1a;">Belum ditangani</p>
+            <p class="text-xs mt-1" style="color:#6d7a77;">Belum ditangani</p>
         </div>
     </div>
 
@@ -76,133 +98,119 @@
                 </div>
                 <div class="px-6 pb-6 space-y-2 mt-2">
 
-                    {{-- Item 1: Menunggu --}}
-                    <div class="flex items-center gap-4 px-4 py-4 rounded-xl transition-colors"
-                         onmouseenter="this.style.backgroundColor='#f2f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                             style="background: rgba(0,104,93,0.08);">
-                            <span class="material-icons-outlined text-base" style="color:#00685d;">home</span>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-semibold" style="color:#191c1e;">Budi Santoso</p>
-                            <p class="text-xs" style="color:#6d7a77;">Pengantar Domisili • 12 Apr 2026</p>
-                        </div>
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold flex-shrink-0"
-                              style="background-color:#c7e7ff;color:#064c6b;">Menunggu</span>
-                        <button onclick="openProsesModal('Budi Santoso','6400***0002','Surat Pengantar Domisili','12 Apr 2026')"
-                                class="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors hover:text-white hover:bg-[#00685d] flex-shrink-0"
-                                style="background-color:#eceef0;color:#3d4947;">Proses →</button>
-                    </div>
+                    @forelse($latestPengajuan as $p)
+                    {{-- Dynamic Item - CSS Grid Layout --}}
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all mb-3">
 
-                    {{-- Item 2: Menunggu --}}
-                    <div class="flex items-center gap-4 px-4 py-4 rounded-xl transition-colors"
-                         onmouseenter="this.style.backgroundColor='#f2f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                             style="background: rgba(43,100,133,0.08);">
-                            <span class="material-icons-outlined text-base" style="color:#2b6485;">work</span>
+                        {{-- Kolom Kiri: Profil Warga (4 cols) --}}
+                        <div class="md:col-span-4 flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                                 style="background: linear-gradient(135deg, rgba(0,104,93,0.12), rgba(0,104,93,0.05));">
+                                <span class="material-icons-outlined text-lg" style="color:#00685d;">person</span>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="font-semibold text-gray-800 truncate">{{ $p->warga->user->name ?? 'Warga' }}</p>
+                                <p class="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
+                                    <span class="material-icons-outlined" style="font-size:14px;">location_on</span>
+                                    <span class="truncate">{{ $p->warga->alamat ?? 'Alamat tidak tersedia' }}</span>
+                                </p>
+                            </div>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-semibold" style="color:#191c1e;">Siti Rahayu</p>
-                            <p class="text-xs" style="color:#6d7a77;">Keterangan Usaha • 11 Apr 2026</p>
-                        </div>
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold flex-shrink-0"
-                              style="background-color:#c7e7ff;color:#064c6b;">Menunggu</span>
-                        <button onclick="openProsesModal('Siti Rahayu','6400***0015','Surat Keterangan Usaha','11 Apr 2026')"
-                                class="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors hover:text-white hover:bg-[#00685d] flex-shrink-0"
-                                style="background-color:#eceef0;color:#3d4947;">Proses →</button>
-                    </div>
 
-                    {{-- Item 3: Diproses --}}
-                    <div class="flex items-center gap-4 px-4 py-4 rounded-xl transition-colors"
-                         onmouseenter="this.style.backgroundColor='#f2f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                             style="background: rgba(65,101,56,0.08);">
-                            <span class="material-icons-outlined text-base" style="color:#416538;">verified_user</span>
+                        {{-- Kolom Tengah: Detail Surat (5 cols) --}}
+                        <div class="md:col-span-5">
+                            <p class="font-medium text-blue-700 leading-tight">{{ $p->jenis_surat }}</p>
+                            <p class="text-sm text-gray-400 mt-1 flex items-center gap-1">
+                                <span class="material-icons-outlined" style="font-size:14px;">schedule</span>
+                                {{ $p->created_at ? $p->created_at->format('d M Y, H:i') : '-' }}
+                            </p>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-semibold" style="color:#191c1e;">Ahmad Fauzii</p>
-                            <p class="text-xs" style="color:#6d7a77;">Tidak Mampu • 10 Apr 2026</p>
-                        </div>
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold flex-shrink-0"
-                              style="background-color:#c5eeb5;color:#2d4f25;">Diproses</span>
-                        <button onclick="openProsesModal('Ahmad Fauzii','6400***0031','Surat Tidak Mampu','10 Apr 2026')"
-                                class="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors hover:text-white hover:bg-[#00685d] flex-shrink-0"
-                                style="background-color:#eceef0;color:#3d4947;">Lihat →</button>
-                    </div>
 
-                    {{-- Item 4: Selesai --}}
-                    <div class="flex items-center gap-4 px-4 py-4 rounded-xl transition-colors"
-                         onmouseenter="this.style.backgroundColor='#f2f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                             style="background: rgba(0,104,93,0.08);">
-                            <span class="material-icons-outlined text-base" style="color:#00685d;">send</span>
+                        {{-- Kolom Kanan: Tombol (3 cols) --}}
+                        <div class="md:col-span-3 flex justify-end">
+                            <a href="{{ route('verifikasi.show', $p->id_pengajuan) }}"
+                               class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-md"
+                               style="background: linear-gradient(135deg, #00685d, #008376);">
+                                <span class="material-icons-outlined text-sm">visibility</span>
+                                Periksa Detail
+                            </a>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-semibold" style="color:#191c1e;">Dewi Lestari</p>
-                            <p class="text-xs" style="color:#6d7a77;">Pengantar Umum • 09 Apr 2026</p>
-                        </div>
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold flex-shrink-0"
-                              style="background-color:#c5eeb5;color:#2d4f25;">Selesai</span>
-                        <button onclick="openProsesModal('Dewi Lestari','6400***0044','Surat Pengantar Umum','09 Apr 2026')"
-                                class="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors hover:text-white hover:bg-[#00685d] flex-shrink-0"
-                                style="background-color:#eceef0;color:#3d4947;">Arsip →</button>
                     </div>
+                    @empty
+                    <div class="flex flex-col items-center justify-center py-12 px-4 text-center">
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 text-[#6d7a77]" style="background: rgba(109,122,119,0.08);">
+                            <span class="material-icons-outlined text-3xl">inbox</span>
+                        </div>
+                        <h3 class="font-manrope font-bold text-sm text-[#191c1e] mb-1">Belum Ada Pengajuan</h3>
+                        <p class="text-xs text-[#6d7a77]">Saat ini belum ada pengajuan surat masuk dari warga.</p>
+                    </div>
+                    @endforelse
+
                 </div>
             </div>
 
             {{-- Tren --}}
             <div class="bg-white rounded-[1.5rem] p-6 mt-6">
-                <h3 class="font-manrope font-bold text-base mb-5" style="color:#191c1e;">Tren Pengajuan — April 2026</h3>
+                <h3 class="font-manrope font-bold text-base mb-5" style="color:#191c1e;">Tren Pengajuan</h3>
                 <div class="space-y-4">
-                    @foreach([['Pengantar Domisili',36,'80%','#00685d'],['Keterangan Usaha',21,'47%','#2b6485'],['Tidak Mampu',15,'34%','#416538'],['Pengantar Umum',15,'34%','#8b6914']] as [$label,$val,$w,$c])
-                    <div>
-                        <div class="flex justify-between mb-1.5">
-                            <span class="text-sm font-medium" style="color:#3d4947;">{{ $label }}</span>
-                            <span class="text-sm font-bold" style="color:#191c1e;">{{ $val }}</span>
+                    @if($totalPengajuan > 0)
+                        @foreach([
+                            ['Pengantar Domisili', $domisiliCount, round(($domisiliCount / $totalPengajuan) * 100) . '%', '#00685d'],
+                            ['Keterangan Usaha', $skuCount, round(($skuCount / $totalPengajuan) * 100) . '%', '#2b6485'],
+                            ['Tidak Mampu', $sktmCount, round(($sktmCount / $totalPengajuan) * 100) . '%', '#416538'],
+                            ['Pengantar Umum', $pengantarCount, round(($pengantarCount / $totalPengajuan) * 100) . '%', '#8b6914']
+                        ] as [$label, $val, $w, $c])
+                        <div>
+                            <div class="flex justify-between mb-1.5">
+                                <span class="text-sm font-medium" style="color:#3d4947;">{{ $label }}</span>
+                                <span class="text-sm font-bold" style="color:#191c1e;">{{ $val }}</span>
+                            </div>
+                            <div class="w-full rounded-full h-2" style="background-color:#eceef0;">
+                                <div class="h-2 rounded-full" style="width:{{ $w }};background-color:{{ $c }};"></div>
+                            </div>
                         </div>
-                        <div class="w-full rounded-full h-2" style="background-color:#eceef0;">
-                            <div class="h-2 rounded-full" style="width:{{ $w }};background-color:{{ $c }};"></div>
-                        </div>
-                    </div>
-                    @endforeach
+                        @endforeach
+                    @else
+                        <div class="text-center py-6 text-xs text-[#6d7a77]">Belum ada tren pengajuan terdeteksi.</div>
+                    @endif
                 </div>
             </div>
         </div>
 
-        {{-- Right: Demografi + Notifikasi --}}
+        {{-- Right: Demografi + Notifikasi (side by side on same row) --}}
         <div class="space-y-6">
-            <div class="bg-white rounded-[1.5rem] p-6">
-                <h3 class="font-manrope font-bold text-base mb-4" style="color:#191c1e;">Demografi Warga</h3>
-                <div id="pieChart" class="w-full h-48"></div>
-                <div class="space-y-2 mt-4">
-                    <div class="flex justify-between text-sm">
-                        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full inline-block" style="background:#00685d;"></span>Laki-laki</span>
-                        <span class="font-semibold" style="color:#191c1e;">134 (54%)</span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full inline-block" style="background:#2b6485;"></span>Perempuan</span>
-                        <span class="font-semibold" style="color:#191c1e;">114 (46%)</span>
-                    </div>
+            {{-- Demografi & Notifikasi: 2 card side by side --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-white rounded-[1.5rem] p-5">
+                    <h3 class="font-manrope font-bold text-sm mb-3" style="color:#191c1e;">Demografi Warga</h3>
+                    @if($totalWarga > 0)
+                        <div id="pieChart" class="w-full h-36"></div>
+                        <div class="space-y-1.5 mt-3">
+                            <div class="flex justify-between text-xs">
+                                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full inline-block" style="background:#00685d;"></span>Laki-laki</span>
+                                <span class="font-semibold" style="color:#191c1e;">{{ $wargaLaki }} ({{ $persen_laki }}%)</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full inline-block" style="background:#2b6485;"></span>Perempuan</span>
+                                <span class="font-semibold" style="color:#191c1e;">{{ $wargaPerempuan }} ({{ $persen_perempuan }}%)</span>
+                            </div>
+                        </div>
+                    @else
+                        <div class="flex flex-col items-center justify-center py-6 text-center">
+                            <span class="material-icons-outlined text-2xl text-[#6d7a77] mb-1">people_outline</span>
+                            <p class="text-xs text-[#6d7a77]">Belum ada data warga.</p>
+                        </div>
+                    @endif
                 </div>
-            </div>
 
-            <div class="bg-white rounded-[1.5rem] p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-manrope font-bold text-base" style="color:#191c1e;">Notifikasi</h3>
-                    <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full" style="background-color:#ffdad6;color:#93000a;">3 Baru</span>
-                </div>
-                <div class="space-y-3">
-                    <div class="flex items-start gap-3">
-                        <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background-color:#00685d;"></div>
-                        <div><p class="text-sm font-semibold" style="color:#191c1e;">Pengajuan baru masuk</p><p class="text-xs" style="color:#6d7a77;">Budi Santoso — 2 menit lalu</p></div>
+                <div class="bg-white rounded-[1.5rem] p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-manrope font-bold text-sm" style="color:#191c1e;">Notifikasi</h3>
+                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background-color:#eceef0;color:#6d7a77;">0 Baru</span>
                     </div>
-                    <div class="flex items-start gap-3">
-                        <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background-color:#ba1a1a;"></div>
-                        <div><p class="text-sm font-semibold" style="color:#191c1e;">Aduan warga baru</p><p class="text-xs" style="color:#6d7a77;">Jalan rusak Blok H — 1 jam lalu</p></div>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background-color:#2b6485;"></div>
-                        <div><p class="text-sm font-semibold" style="color:#191c1e;">Warga baru terdaftar</p><p class="text-xs" style="color:#6d7a77;">Siti Rahayu — 3 jam lalu</p></div>
+                    <div class="flex flex-col items-center justify-center py-6 text-center">
+                        <span class="material-icons-outlined text-xl text-[#6d7a77] mb-1">notifications_off</span>
+                        <p class="text-xs text-[#6d7a77]">Belum ada notifikasi.</p>
                     </div>
                 </div>
             </div>
@@ -280,7 +288,7 @@
                 <div class="rounded-xl p-4" style="background-color:#f2f4f6;">
                     <div class="grid grid-cols-2 gap-3 text-sm">
                         <div><p class="text-xs" style="color:#6d7a77;">Nama Warga</p><p id="mp-nama" class="font-semibold mt-0.5" style="color:#191c1e;"></p></div>
-                        <div><p class="text-xs" style="color:#6d7a77;">NIK</p><p id="mp-nik" class="font-semibold mt-0.5" style="color:#191c1e;"></p></div>
+                        <div><p class="text-xs" style="color:#6d7a77;">Nomor HP</p><p id="mp-no_hp" class="font-semibold mt-0.5" style="color:#191c1e;"></p></div>
                         <div><p class="text-xs" style="color:#6d7a77;">Jenis Surat</p><p id="mp-surat" class="font-semibold mt-0.5" style="color:#191c1e;"></p></div>
                         <div><p class="text-xs" style="color:#6d7a77;">Tanggal</p><p id="mp-tgl" class="font-semibold mt-0.5" style="color:#191c1e;"></p></div>
                     </div>
@@ -353,42 +361,53 @@
                 </button>
             </div>
             {{-- Body --}}
-            <form class="px-6 py-5 space-y-4" onsubmit="submitPengumuman(event)">
+            <form method="POST" action="{{ route('pengumuman.store') }}" class="px-6 py-5 space-y-4">
+                @csrf
                 <div>
                     <label class="text-xs font-semibold uppercase tracking-widest block mb-1.5" style="color:#6d7a77;">Judul Pengumuman</label>
-                    <input type="text" id="peng-judul" placeholder="Cth: Gotong Royong RT 06 Minggu Ini"
+                    <input type="text" name="judul" id="peng-judul" placeholder="Cth: Gotong Royong RT 06 Minggu Ini"
                            class="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00685d]/20"
                            style="background-color:#f2f4f6;color:#191c1e;border:none;" required>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="text-xs font-semibold uppercase tracking-widest block mb-1.5" style="color:#6d7a77;">Kategori</label>
-                        <select class="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none"
+                        <select name="kategori" class="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none"
                                 style="background-color:#f2f4f6;color:#191c1e;border:none;">
-                            <option>Kegiatan RT</option>
-                            <option>Keamanan</option>
-                            <option>Administrasi</option>
-                            <option>Kesehatan</option>
-                            <option>Lingkungan</option>
-                            <option>Lainnya</option>
+                            <option value="Kegiatan RT">Kegiatan RT</option>
+                            <option value="Keamanan">Keamanan</option>
+                            <option value="Administrasi">Administrasi</option>
+                            <option value="Kesehatan">Kesehatan</option>
+                            <option value="Lingkungan">Lingkungan</option>
+                            <option value="Lainnya">Lainnya</option>
                         </select>
                     </div>
                     <div>
                         <label class="text-xs font-semibold uppercase tracking-widest block mb-1.5" style="color:#6d7a77;">Sasaran</label>
-                        <select class="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none"
+                        <select name="sasaran" class="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none"
                                 style="background-color:#f2f4f6;color:#191c1e;border:none;">
-                            <option>Semua Warga</option>
-                            <option>Bapak-Bapak</option>
-                            <option>Ibu-Ibu</option>
-                            <option>Pemuda</option>
+                            <option value="Semua Warga">Semua Warga</option>
+                            <option value="Bapak-Bapak">Bapak-Bapak</option>
+                            <option value="Ibu-Ibu">Ibu-Ibu</option>
+                            <option value="Pemuda">Pemuda</option>
                         </select>
                     </div>
                 </div>
                 <div>
                     <label class="text-xs font-semibold uppercase tracking-widest block mb-1.5" style="color:#6d7a77;">Isi Pengumuman</label>
-                    <textarea id="peng-isi" rows="4" placeholder="Tulis isi pengumuman untuk seluruh warga RT 06..."
+                    <textarea name="isi" id="peng-isi" rows="3" placeholder="Tulis isi pengumuman untuk seluruh warga RT 06..."
                               class="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00685d]/20 resize-none"
                               style="background-color:#f2f4f6;color:#191c1e;border:none;" required></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-semibold uppercase tracking-widest block mb-1.5" style="color:#6d7a77;">Waktu Mulai (Opsional)</label>
+                        <input type="datetime-local" name="waktu_mulai" class="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none" style="background-color:#f2f4f6;color:#191c1e;border:none;" title="Kosongkan jika mulai sekarang">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold uppercase tracking-widest block mb-1.5" style="color:#6d7a77;">Waktu Selesai (Opsional)</label>
+                        <input type="datetime-local" name="waktu_selesai" class="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none" style="background-color:#f2f4f6;color:#191c1e;border:none;" title="Kosongkan jika sampai selesai">
+                    </div>
                 </div>
                 <div class="rounded-xl p-3 flex items-start gap-2" style="background-color:#eceef0;">
                     <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color:#6d7a77;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -413,17 +432,37 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
-new ApexCharts(document.querySelector('#pieChart'), {
-    chart:{ type:'donut', height:190 },
-    colors:['#00685d','#2b6485'],
-    series:[134,114], labels:['Laki-laki','Perempuan'],
-    plotOptions:{ pie:{ donut:{ size:'75%' } } },
-    dataLabels:{ enabled:false }, legend:{ show:false }
-}).render();
+// Realtime date/time for RT dashboard
+function updateRTDate() {
+    const el = document.getElementById('rt-date-display');
+    if (!el) return;
+    const now = new Date();
+    const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+    const day = days[now.getDay()];
+    const date = now.getDate();
+    const month = months[now.getMonth()];
+    const year = now.getFullYear();
+    const hours = String(now.getHours()).padStart(2,'0');
+    const mins = String(now.getMinutes()).padStart(2,'0');
+    el.textContent = `${day}, ${date} ${month} ${year} — ${hours}:${mins} WIB — RT 06`;
+}
+updateRTDate();
+setInterval(updateRTDate, 30000);
+const pieElement = document.querySelector('#pieChart');
+if (pieElement) {
+    new ApexCharts(pieElement, {
+        chart:{ type:'donut', height:190 },
+        colors:['#00685d','#2b6485'],
+        series:[{{ $wargaLaki }}, {{ $wargaPerempuan }}], labels:['Laki-laki','Perempuan'],
+        plotOptions:{ pie:{ donut:{ size:'75%' } } },
+        dataLabels:{ enabled:false }, legend:{ show:false }
+    }).render();
+}
 
-function openProsesModal(nama, nik, surat, tgl) {
+function openProsesModal(nama, no_hp, surat, tgl) {
     document.getElementById('mp-nama').textContent  = nama;
-    document.getElementById('mp-nik').textContent   = nik;
+    document.getElementById('mp-no_hp').textContent   = no_hp;
     document.getElementById('mp-surat').textContent = surat;
     document.getElementById('mp-tgl').textContent   = tgl;
     const m = document.getElementById('modal-proses');

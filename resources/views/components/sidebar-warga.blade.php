@@ -1,4 +1,4 @@
-{{-- Sidebar Warga — Civic Curator Design System --}}
+{{-- Sidebar Warga â€” Civic Curator Design System --}}
 {{-- No border rule: uses tonal surface-container-low as full-bleed vertical slab --}}
 <aside class="w-[272px] flex-shrink-0 flex flex-col" style="background-color: #f2f4f6;">
 
@@ -20,7 +20,7 @@
     {{-- Navigation --}}
     <nav class="flex-1 px-4 space-y-1">
 
-        {{-- Dashboard (unified — replaces old Home + Dashboard duplicate) --}}
+        {{-- Dashboard (unified â€” replaces old Home + Dashboard duplicate) --}}
         <a href="{{ route('dashboard.warga') }}"
            class="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all relative
                    {{ request()->routeIs('dashboard.warga') || request()->routeIs('dashboard') ? 'text-[#00685d] font-semibold' : 'text-[#3d4947] hover:text-[#00685d]' }}"
@@ -46,26 +46,26 @@
         </a>
 
         {{-- Riwayat --}}
-        <a href="{{ route('riwayat.index') }}"
+        <a href="{{ route('warga.riwayat') }}"
            class="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all relative
-                   {{ request()->routeIs('riwayat.*') ? 'text-[#00685d] font-semibold' : 'text-[#3d4947] hover:text-[#00685d]' }}"
-           style="{{ request()->routeIs('riwayat.*') ? 'background-color: rgba(0,104,93,0.06);' : '' }}">
-            @if(request()->routeIs('riwayat.*'))
+                   {{ request()->routeIs('warga.riwayat*') || request()->is('warga/riwayat*') ? 'text-[#00685d] font-semibold' : 'text-[#3d4947] hover:text-[#00685d]' }}"
+           style="{{ request()->routeIs('warga.riwayat*') || request()->is('warga/riwayat*') ? 'background-color: rgba(0,104,93,0.06);' : '' }}">
+            @if(request()->routeIs('warga.riwayat*') || request()->is('warga/riwayat*'))
                 <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full" style="background-color: #00685d;"></span>
             @endif
-            <span class="material-icons-outlined text-xl {{ request()->routeIs('riwayat.*') ? 'text-[#00685d]' : 'text-[#6d7a77] group-hover:text-[#00685d]' }}">history</span>
+            <span class="material-icons-outlined text-xl {{ request()->routeIs('warga.riwayat*') || request()->is('warga/riwayat*') ? 'text-[#00685d]' : 'text-[#6d7a77] group-hover:text-[#00685d]' }}">history</span>
             <span>Riwayat</span>
         </a>
 
         {{-- Settings --}}
-        <a href="{{ route('warga.profile') }}"
+        <a href="{{ route('warga.settings') }}"
            class="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all relative
-                   {{ request()->routeIs('warga.profile') ? 'text-[#00685d] font-semibold' : 'text-[#3d4947] hover:text-[#00685d]' }}"
-           style="{{ request()->routeIs('warga.profile') ? 'background-color: rgba(0,104,93,0.06);' : '' }}">
-            @if(request()->routeIs('warga.profile'))
+                   {{ request()->routeIs('warga.settings*') ? 'text-[#00685d] font-semibold' : 'text-[#3d4947] hover:text-[#00685d]' }}"
+           style="{{ request()->routeIs('warga.settings*') ? 'background-color: rgba(0,104,93,0.06);' : '' }}">
+            @if(request()->routeIs('warga.settings*'))
                 <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full" style="background-color: #00685d;"></span>
             @endif
-            <span class="material-icons-outlined text-xl {{ request()->routeIs('warga.profile') ? 'text-[#00685d]' : 'text-[#6d7a77] group-hover:text-[#00685d]' }}">settings</span>
+            <span class="material-icons-outlined text-xl {{ request()->routeIs('warga.settings*') ? 'text-[#00685d]' : 'text-[#6d7a77] group-hover:text-[#00685d]' }}">settings</span>
             <span>Settings</span>
         </a>
     </nav>

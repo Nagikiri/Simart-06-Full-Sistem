@@ -61,8 +61,8 @@
                     </div>
                     <div class="flex items-center justify-between py-3" style="border-bottom: 1px solid #eceef0;">
                         <div>
-                            <p class="text-xs font-medium uppercase tracking-widest" style="color: #6d7a77;">NIK</p>
-                            <p class="text-sm font-semibold mt-1" style="color: #191c1e;">{{ Auth::user()->nik ?? '— Belum diisi' }}</p>
+                            <p class="text-xs font-semibold uppercase tracking-wider" style="color: #6d7a77; letter-spacing: 0.05rem;">Nomor HP</p>
+                            <p class="text-sm font-semibold mt-1" style="color: #191c1e;">{{ Auth::user()->no_hp ?? '— Belum diisi' }}</p>
                         </div>
                         <span class="material-icons-outlined text-lg" style="color: #bcc9c6;">badge</span>
                     </div>
@@ -120,11 +120,10 @@
                            class="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00685d]/30"
                            style="background-color: #f2f4f6; color: #191c1e; border: none;">
                 </div>
-                <div>
-                    <label class="text-xs font-medium uppercase tracking-widest block mb-1.5" style="color: #6d7a77;">NIK</label>
-                    <input type="text" name="nik" value="{{ Auth::user()->nik ?? '' }}" maxlength="16" placeholder="16 digit NIK"
-                           class="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00685d]/30"
-                           style="background-color: #f2f4f6; color: #191c1e; border: none;">
+                <div class="mb-5">
+                    <label class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: #3d4947;">Nomor HP</label>
+                    <input type="text" name="no_hp" value="{{ Auth::user()->no_hp ?? '' }}" placeholder="Contoh: 08123456789"
+                           class="w-full px-4 py-3 rounded-xl text-sm border border-[#bcc9c6]/50 focus:border-[#00685d] focus:ring-[#00685d]/10">
                 </div>
                 <div>
                     <label class="text-xs font-medium uppercase tracking-widest block mb-1.5" style="color: #6d7a77;">Alamat</label>

@@ -6,501 +6,206 @@
 
 @section('content')
 
-    {{-- ═══════════════════════════════════════════════════════════════
-         HERO — Welcome Section (Stitch: "Selamat Datang, Pak Budi")
-         Gradient background matching primary → primary-container
-    ═══════════════════════════════════════════════════════════════ --}}
-    <section class="relative rounded-[1.5rem] overflow-hidden mb-8" style="background: linear-gradient(135deg, #00685d 0%, #008376 50%, #2A9D8F 100%);">
-        {{-- Decorative orbs --}}
-        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-16 translate-x-16"></div>
-        <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl translate-y-12 -translate-x-8"></div>
-
-        <div class="relative z-10 px-8 lg:px-10 py-8 lg:py-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+    {{-- HERO SECTION --}}
+    <section class="relative rounded-[1.5rem] overflow-hidden mb-8 ambient-lift" style="background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 50%, #2A9D8F 100%);">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-16 translate-x-16"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-2xl translate-y-12 -translate-x-8"></div>
+        <div class="relative z-10 px-8 lg:px-10 py-8 lg:py-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h1 class="font-manrope font-bold text-2xl lg:text-3xl text-white leading-tight mb-2">
-                    Selamat Datang, {{ auth()->user()->name ?? 'Warga' }}
+                <h1 class="font-manrope font-extrabold text-2xl lg:text-3xl text-white leading-tight mb-2">
+                    Selamat Datang, {{ explode(' ', auth()->user()->name)[0] ?? 'Warga' }}! 👋
                 </h1>
-                <p class="text-white/70 text-sm lg:text-base">
-                    Pantau pengajuan surat dan kegiatan RT 06 hari ini.
+                <p class="text-white/90 text-sm lg:text-base font-medium">
+                    Semoga harimu menyenangkan. 
+                    @if(($stats['dalam_antrian'] ?? 0) > 0)
+                        Kamu punya <span class="bg-white/20 px-2 py-0.5 rounded-lg font-bold">{{ $stats['dalam_antrian'] }} pengajuan</span> yang sedang diproses.
+                    @else
+                        Saat ini tidak ada pengajuan surat yang sedang diproses.
+                    @endif
                 </p>
             </div>
-            <a href="{{ route('pengajuan.create') }}"
-               class="inline-flex items-center gap-2 bg-white text-[#00685d] font-semibold px-6 py-3 rounded-xl text-sm shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 self-start">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                Buat Pengajuan Baru
+            <a href="{{ route('pengajuan.index') }}" class="glass-card text-white hover:text-white px-5 py-2.5 rounded-xl text-sm font-semibold inline-flex items-center gap-2 hover:-translate-y-1 transition-all duration-300" style="background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.4);">
+                <span class="material-icons-outlined text-lg">add_circle</span>
+                Buat Surat Baru
             </a>
         </div>
     </section>
 
-    {{-- ═══════════════════════════════════════════════════════════════
-         STATS CARDS — (Stitch: 12 Disetujui, 03 Dalam Antrean, 01 Perlu Revisi)
-         No borders — tonal separation via surface-lowest on surface bg
-    ═══════════════════════════════════════════════════════════════ --}}
+    {{-- STATS SECTION --}}
     <section class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-        {{-- Disetujui --}}
-        <div class="bg-white rounded-[1.5rem] p-6 lg:p-8 ambient-lift cursor-default">
-            <div class="flex items-start justify-between mb-4">
-                <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, rgba(65,101,56,0.12), rgba(65,101,56,0.04));">
-                    <svg class="w-5 h-5" style="color: #416538;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
+        <div class="bg-white rounded-[1.5rem] p-6 ambient-lift shadow-sm">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background: linear-gradient(135deg, rgba(65,101,56,0.12), rgba(65,101,56,0.04));">
+                <span class="material-icons-outlined text-[#416538] text-2xl">check_circle</span>
             </div>
-            <span class="font-manrope font-bold text-3xl lg:text-4xl" style="color: #191c1e;">12</span>
-            <p class="text-xs font-medium uppercase tracking-widest mt-1" style="color: #6d7a77; letter-spacing: 0.06rem;">Disetujui</p>
+            <span class="font-bold text-3xl text-gray-900">{{ str_pad($stats['selesai'] ?? 0, 2, '0', STR_PAD_LEFT) }}</span>
+            <p class="text-xs font-semibold uppercase tracking-widest mt-1 text-[#6d7a77]">Disetujui</p>
         </div>
-
-        {{-- Dalam Antrean --}}
-        <div class="bg-white rounded-[1.5rem] p-6 lg:p-8 ambient-lift cursor-default">
-            <div class="flex items-start justify-between mb-4">
-                <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, rgba(43,100,133,0.12), rgba(43,100,133,0.04));">
-                    <svg class="w-5 h-5" style="color: #2b6485;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
+        <div class="bg-white rounded-[1.5rem] p-6 ambient-lift shadow-sm">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background: linear-gradient(135deg, rgba(43,100,133,0.12), rgba(43,100,133,0.04));">
+                <span class="material-icons-outlined text-[#2b6485] text-2xl">pending</span>
             </div>
-            <span class="font-manrope font-bold text-3xl lg:text-4xl" style="color: #191c1e;">03</span>
-            <p class="text-xs font-medium uppercase tracking-widest mt-1" style="color: #6d7a77; letter-spacing: 0.06rem;">Dalam Antrean</p>
+            <span class="font-bold text-3xl text-gray-900">{{ str_pad($stats['dalam_antrian'] ?? 0, 2, '0', STR_PAD_LEFT) }}</span>
+            <p class="text-xs font-semibold uppercase tracking-widest mt-1 text-[#6d7a77]">Dalam Antrean</p>
         </div>
-
-        {{-- Perlu Revisi --}}
-        <div class="bg-white rounded-[1.5rem] p-6 lg:p-8 ambient-lift cursor-default">
-            <div class="flex items-start justify-between mb-4">
-                <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, rgba(186,26,26,0.10), rgba(186,26,26,0.03));">
-                    <svg class="w-5 h-5" style="color: #ba1a1a;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-                    </svg>
-                </div>
+        <div class="bg-white rounded-[1.5rem] p-6 ambient-lift shadow-sm">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background: linear-gradient(135deg, rgba(186,26,26,0.10), rgba(186,26,26,0.03));">
+                <span class="material-icons-outlined text-[#ba1a1a] text-2xl">cancel</span>
             </div>
-            <span class="font-manrope font-bold text-3xl lg:text-4xl" style="color: #191c1e;">01</span>
-            <p class="text-xs font-medium uppercase tracking-widest mt-1" style="color: #6d7a77; letter-spacing: 0.06rem;">Perlu Revisi</p>
+            <span class="font-bold text-3xl text-gray-900">{{ str_pad($stats['ditolak'] ?? 0, 2, '0', STR_PAD_LEFT) }}</span>
+            <p class="text-xs font-semibold uppercase tracking-widest mt-1 text-[#6d7a77]">Ditolak</p>
         </div>
     </section>
 
-    {{-- ═══════════════════════════════════════════════════════════════
-         SERVICE CARDS — Quick Action Grid (Fokus Administrasi Surat)
-    ═══════════════════════════════════════════════════════════════ --}}
-    <section class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-        {{-- Buat Pengajuan --}}
-        <a href="{{ route('pengajuan.create') }}" class="bg-white rounded-[1.5rem] p-6 lg:p-8 ambient-lift group block">
-            <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-transform group-hover:scale-110" style="background: linear-gradient(135deg, rgba(0,104,93,0.10), rgba(0,131,118,0.05));">
-                <svg class="w-7 h-7" style="color: #00685d;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
+    <div class="flex flex-col gap-8 mb-8">
+        {{-- PENGUMUMAN RT (Full Width) --}}
+        @if(isset($pengumuman) && count($pengumuman) > 0)
+        <div class="bg-white rounded-[1.5rem] p-6 shadow-sm border border-gray-100 ambient-lift">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                    <span class="material-icons-outlined text-[#00685d]">campaign</span>
+                    Pengumuman RT 06
+                </h2>
             </div>
-            <h3 class="font-manrope font-bold text-base mb-1" style="color: #191c1e;">Buat Pengajuan</h3>
-            <p class="text-xs" style="color: #6d7a77;">Ajukan surat keterangan atau pengantar baru</p>
-        </a>
-
-        {{-- Riwayat Surat --}}
-        <a href="{{ route('riwayat.index') }}" class="bg-white rounded-[1.5rem] p-6 lg:p-8 ambient-lift group block">
-            <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-transform group-hover:scale-110" style="background: linear-gradient(135deg, rgba(43,100,133,0.10), rgba(43,100,133,0.05));">
-                <svg class="w-7 h-7" style="color: #2b6485;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-                </svg>
-            </div>
-            <h3 class="font-manrope font-bold text-base mb-1" style="color: #191c1e;">Riwayat Surat</h3>
-            <p class="text-xs" style="color: #6d7a77;">Lihat status dan riwayat pengajuan surat Anda</p>
-        </a>
-
-        {{-- Download Template --}}
-        <a href="{{ route('warga.template') }}" class="bg-white rounded-[1.5rem] p-6 lg:p-8 ambient-lift group block">
-            <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-transform group-hover:scale-110" style="background: linear-gradient(135deg, rgba(65,101,56,0.10), rgba(65,101,56,0.05));">
-                <svg class="w-7 h-7" style="color: #416538;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                </svg>
-            </div>
-            <h3 class="font-manrope font-bold text-base mb-1" style="color: #191c1e;">Download Template</h3>
-            <p class="text-xs" style="color: #6d7a77;">Unduh template surat, isi sendiri, lalu ajukan ke RT</p>
-        </a>
-    </section>
-
-    {{-- ═══════════════════════════════════════════════════════════════
-         ALUR PANDUAN — Cara Mengajukan Surat
-    ═══════════════════════════════════════════════════════════════ --}}
-    <section class="mb-8">
-        <div class="bg-white rounded-[1.5rem] p-6 lg:p-8">
-            <div class="flex items-center gap-3 mb-5">
-                <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background: rgba(0,104,93,0.10);">
-                    <svg class="w-4 h-4" style="color:#00685d;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-                <h2 class="font-manrope font-bold text-base" style="color:#191c1e;">Cara Mengajukan Surat ke RT</h2>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold text-white" style="background:linear-gradient(135deg,#00685d,#008376);">1</div>
-                    <div>
-                        <p class="text-sm font-semibold" style="color:#191c1e;">Download Template</p>
-                        <p class="text-xs mt-0.5 leading-relaxed" style="color:#6d7a77;">Unduh template surat yang sesuai kebutuhan dari menu <a href="{{ route('warga.template') }}" class="font-semibold underline" style="color:#00685d;">Template Surat</a>.</p>
+            <div class="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                @foreach($pengumuman as $p)
+                <div class="flex gap-4 p-5 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-md transition-all">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style="background: rgba(0,104,93,0.1);">
+                        <span class="material-icons-outlined text-[#00685d]">campaign</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between gap-4 mb-1">
+                            <h3 class="font-bold text-gray-900">{{ $p->judul }}</h3>
+                            <span class="text-xs text-gray-500 whitespace-nowrap">{{ $p->created_at->diffForHumans() }}</span>
+                        </div>
+                        <div class="flex gap-2 mb-2">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#00685d]/10 text-[#00685d]">{{ $p->kategori }}</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">{{ $p->sasaran }}</span>
+                        </div>
+                        <p class="text-sm text-gray-600 leading-relaxed">{{ $p->isi }}</p>
                     </div>
                 </div>
-                <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold text-white" style="background:linear-gradient(135deg,#2b6485,#3a82a8);">2</div>
-                    <div>
-                        <p class="text-sm font-semibold" style="color:#191c1e;">Isi & Lengkapi Sendiri</p>
-                        <p class="text-xs mt-0.5 leading-relaxed" style="color:#6d7a77;">Isi data diri di template surat secara mandiri, pastikan informasi akurat dan lengkap.</p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold text-white" style="background:linear-gradient(135deg,#416538,#5a8a4f);">3</div>
-                    <div>
-                        <p class="text-sm font-semibold" style="color:#191c1e;">Upload & Ajukan ke RT</p>
-                        <p class="text-xs mt-0.5 leading-relaxed" style="color:#6d7a77;">Upload surat yang sudah diisi saat <a href="{{ route('pengajuan.create') }}" class="font-semibold underline" style="color:#00685d;">Buat Pengajuan</a>. RT akan TTD & stempel.</p>
-                    </div>
-                </div>
+                @endforeach
             </div>
         </div>
-    </section>
+        @endif
 
-    {{-- ═══════════════════════════════════════════════════════════════
-         MAIN CONTENT — Two-column layout
-         Left: Daftar Pengajuan Aktif
-         Right: Aktivitas Terkini + Kas RT
-    ═══════════════════════════════════════════════════════════════ --}}
-    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+        {{-- PENGAJUAN AKTIF (Full Width) --}}
+        <div class="bg-white rounded-[1.5rem] p-6 shadow-sm border border-gray-100 ambient-lift">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                    <span class="material-icons-outlined text-[#00685d]">description</span>
+                    Pengajuan Aktif Anda
+                </h2>
+                @if(count($pengajuanAktif ?? []) > 0)
+                    <a href="{{ route('warga.riwayat') }}" class="text-sm font-semibold text-[#00685d] hover:underline px-3 py-1 bg-gray-50 rounded-lg transition-colors hover:bg-[#00685d]/10">Lihat Semua</a>
+                @endif
+            </div>
 
-        {{-- ── LEFT COLUMN: Daftar Pengajuan Aktif ──────────────── --}}
-        <div class="lg:col-span-7">
-            <div class="bg-white rounded-[1.5rem] overflow-hidden">
-                {{-- Card Header --}}
-                <div class="flex items-center justify-between px-8 pt-8 pb-4">
-                    <h2 class="font-manrope font-bold text-lg" style="color: #191c1e;">Daftar Pengajuan Aktif</h2>
-                    <a href="{{ route('pengajuan.index') }}" class="text-xs font-semibold transition-colors hover:text-[#008376]" style="color: #00685d;">
-                        Lihat Semua
-                    </a>
-                </div>
-
-                {{-- Pengajuan List — No-Divider Rule (Civic Curator) --}}
-                <div class="px-6 pb-6 space-y-2">
-
-                    {{-- Item 1: Sedang Diproses --}}
-                    <div class="flex items-center gap-4 px-4 py-4 rounded-xl transition-colors cursor-pointer" style="background: transparent;" onmouseenter="this.style.backgroundColor='#f2f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, rgba(0,104,93,0.10), rgba(0,104,93,0.04));">
-                            <svg class="w-5 h-5" style="color: #00685d;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                            </svg>
+            <div class="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                @forelse($pengajuanAktif ?? [] as $item)
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-md transition-all">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style="background: rgba(0,104,93,0.1);">
+                                <span class="material-icons-outlined text-[#00685d]">feed</span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-gray-900">{{ $item->jenis_surat }}</p>
+                                <p class="text-xs text-gray-500 mt-1">Diajukan: {{ $item->created_at->format('d M Y') }}</p>
+                            </div>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-semibold truncate" style="color: #191c1e;">Surat Pengantar Domisili</p>
-                            <p class="text-xs" style="color: #6d7a77;">Diajukan: 20 Juni 2024 • ID: #RT06-8821</p>
+                        <div class="flex items-center gap-4">
+                            @php
+                                $badge = match($item->status) {
+                                    'selesai' => ['bg-green-100', 'text-green-800', 'Selesai'],
+                                    'ditolak' => ['bg-red-100', 'text-red-800', 'Ditolak'],
+                                    'diproses' => ['bg-blue-100', 'text-blue-800', 'Sedang Diproses'],
+                                    default => ['bg-yellow-100', 'text-yellow-800', 'Menunggu']
+                                };
+                            @endphp
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $badge[0] }} {{ $badge[1] }}">
+                                {{ $badge[2] }}
+                            </span>
+                            <a href="{{ route('warga.riwayat') }}" class="text-xs font-bold text-[#00685d] hover:underline bg-[#00685d]/10 px-3 py-1.5 rounded-lg transition-colors hover:bg-[#00685d]/20">Lihat Detail</a>
                         </div>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold flex-shrink-0" style="background-color: #c7e7ff; color: #064c6b;">
-                            Sedang Diproses
-                        </span>
                     </div>
-
-                    {{-- Item 2: Selesai --}}
-                    <div class="flex items-center gap-4 px-4 py-4 rounded-xl transition-colors cursor-pointer" style="background: transparent;" onmouseenter="this.style.backgroundColor='#f2f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, rgba(65,101,56,0.10), rgba(65,101,56,0.04));">
-                            <svg class="w-5 h-5" style="color: #416538;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                            </svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-semibold truncate" style="color: #191c1e;">Surat Keterangan Berkelakuan Baik</p>
-                            <p class="text-xs" style="color: #6d7a77;">Diajukan: 18 Juni 2024 • ID: #RT06-8815</p>
-                        </div>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold flex-shrink-0" style="background-color: #c5eeb5; color: #2d4f25;">
-                            Selesai
-                        </span>
+                @empty
+                    <div class="py-12 text-center bg-gray-50/50 rounded-[1.5rem] border-2 border-dashed border-gray-200 flex flex-col items-center justify-center">
+                        {{-- Undraw-style Empty State SVG --}}
+                        <svg class="w-48 h-48 mb-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" fill="#F3F4F6"/>
+                            <path d="M12 17C14.7614 17 17 14.7614 17 12H7C7 14.7614 9.23858 17 12 17Z" fill="#D1D5DB"/>
+                            <circle cx="9.5" cy="10.5" r="1.5" fill="#9CA3AF"/>
+                            <circle cx="14.5" cy="10.5" r="1.5" fill="#9CA3AF"/>
+                            <path d="M12 16C13.6569 16 15 14.6569 15 13H9C9 14.6569 10.3431 16 12 16Z" fill="#9CA3AF"/>
+                        </svg>
+                        <h3 class="font-extrabold text-gray-900 text-xl mb-2">Wah, masih sepi nih! 🍃</h3>
+                        <p class="text-sm text-gray-500 mb-6 max-w-md mx-auto font-medium">Kamu belum punya antrean pengajuan surat ke RT hari ini. Tekan tombol di bawah jika kamu mau buat pengajuan baru ya.</p>
+                        <a href="{{ route('pengajuan.index') }}" class="btn-civic-gradient inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-white font-semibold text-sm shadow-md">
+                            <span class="material-icons-outlined text-sm">add_circle</span>
+                            Buat Pengajuan Baru
+                        </a>
                     </div>
-
-                    {{-- Item 3: Ditolak --}}
-                    <div class="flex items-center gap-4 px-4 py-4 rounded-xl transition-colors cursor-pointer" style="background: transparent;" onmouseenter="this.style.backgroundColor='#f2f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, rgba(186,26,26,0.08), rgba(186,26,26,0.03));">
-                            <svg class="w-5 h-5" style="color: #ba1a1a;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.193 23.193 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                            </svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-semibold truncate" style="color: #191c1e;">Surat Keterangan Usaha (SKU)</p>
-                            <p class="text-xs" style="color: #6d7a77;">Diajukan: 15 Juni 2024 • ID: #RT06-8790</p>
-                        </div>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold flex-shrink-0" style="background-color: #ffdad6; color: #93000a;">
-                            Ditolak
-                        </span>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
 
-        {{-- ── RIGHT COLUMN: Aktivitas Terkini + Kas RT ─────────── --}}
-        <div class="lg:col-span-5 space-y-6">
-
-            {{-- Aktivitas Terkini (Stitch) --}}
-            <div class="bg-white rounded-[1.5rem] p-8">
-                <h2 class="font-manrope font-bold text-lg mb-6" style="color: #191c1e;">Aktivitas Terkini</h2>
-
-                <div class="space-y-5">
-                    {{-- Activity 1: Kerja Bakti --}}
-                    <div class="flex gap-4">
-                        <div class="w-2 h-2 rounded-full mt-2 flex-shrink-0" style="background-color: #00685d;"></div>
-                        <div>
-                            <p class="text-sm font-semibold" style="color: #191c1e;">Kerja Bakti Minggu Ini</p>
-                            <p class="text-xs mt-0.5" style="color: #6d7a77;">Diumumkan oleh Ketua RT • 2 Jam yang lalu</p>
-                            <p class="text-xs mt-1 italic" style="color: #3d4947;">"Persiapan menyambut HUT RI ke-79..."</p>
-                        </div>
-                    </div>
-
-                    {{-- Activity 2: Surat Selesai --}}
-                    <div class="flex gap-4">
-                        <div class="w-2 h-2 rounded-full mt-2 flex-shrink-0" style="background-color: #416538;"></div>
-                        <div>
-                            <p class="text-sm font-semibold" style="color: #191c1e;">Surat Domisili Selesai</p>
-                            <p class="text-xs mt-0.5" style="color: #6d7a77;">Admin RT 06 • Kemarin, 14:20</p>
-                        </div>
-                    </div>
-
-                    {{-- Activity 3: Pengajuan Disetujui --}}
-                    <div class="flex gap-4">
-                        <div class="w-2 h-2 rounded-full mt-2 flex-shrink-0" style="background-color: #2b6485;"></div>
-                        <div>
-                            <p class="text-sm font-semibold" style="color: #191c1e;">Pengajuan Disetujui</p>
-                            <p class="text-xs mt-0.5" style="color: #6d7a77;">Admin RT 06 • 2 Hari yang lalu</p>
-                        </div>
-                    </div>
+        {{-- PANDUAN & INFO (Full Width, Stacked) --}}
+        <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100">
+            <h3 class="font-bold text-xl text-gray-900 mb-6 flex items-center gap-2">
+                <span class="material-icons-outlined text-[#00685d] text-2xl">help_outline</span>
+                Panduan Mengajukan Surat
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+                <div class="p-6 rounded-xl bg-gray-50 border border-gray-100 text-center relative z-10">
+                    <div class="w-12 h-12 rounded-full border-4 border-white bg-[#00685d] text-white font-bold text-lg flex items-center justify-center mx-auto mb-4 shadow-sm">1</div>
+                    <h4 class="font-bold text-gray-900 mb-2">Pilih Jenis Surat</h4>
+                    <p class="text-sm text-gray-600 leading-relaxed">Buka menu <b>Pengajuan</b>, lalu cari dan pilih template surat yang Anda butuhkan (misal: Surat Pengantar KTP).</p>
+                </div>
+                <div class="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gray-200 z-0"></div>
+                <div class="p-6 rounded-xl bg-gray-50 border border-gray-100 text-center relative z-10">
+                    <div class="w-12 h-12 rounded-full border-4 border-white bg-[#00685d] text-white font-bold text-lg flex items-center justify-center mx-auto mb-4 shadow-sm">2</div>
+                    <h4 class="font-bold text-gray-900 mb-2">Isi Data Langsung</h4>
+                    <p class="text-sm text-gray-600 leading-relaxed">Ketikkan data Anda pada formulir isian di layar. Anda dapat melihat perubahan pada kertas surat secara <i>real-time</i> (Live Preview).</p>
+                </div>
+                <div class="p-6 rounded-xl bg-gray-50 border border-gray-100 text-center relative z-10">
+                    <div class="w-12 h-12 rounded-full border-4 border-white bg-[#00685d] text-white font-bold text-lg flex items-center justify-center mx-auto mb-4 shadow-sm">3</div>
+                    <h4 class="font-bold text-gray-900 mb-2">Kirim & Pantau</h4>
+                    <p class="text-sm text-gray-600 leading-relaxed">Setelah menekan tombol Kirim, surat akan masuk antrean RT. Anda dapat mengecek status di kolom <b>Pengajuan Aktif</b> ini atau menu <b>Riwayat</b>.</p>
                 </div>
             </div>
-
-
         </div>
-    </section>
-
-    {{-- ═══════════════════════════════════════════════════════════════
-         RIWAYAT AKTIVITAS TERAKHIR — Table (Warga Only)
-         Civic Curator "No-Divider" Table Rule
-    ═══════════════════════════════════════════════════════════════ --}}
-    @if(auth()->user()->role === 'warga')
-    <section class="mb-8">
-        <div class="bg-white rounded-[1.5rem] overflow-hidden">
-            {{-- Header --}}
-            <div class="flex items-center justify-between px-8 pt-8 pb-4">
-                <h2 class="font-manrope font-bold text-lg" style="color: #191c1e;">Riwayat Aktivitas Terakhir</h2>
-                <a href="{{ route('riwayat.index') }}" class="text-xs font-semibold transition-colors hover:text-[#008376]" style="color: #00685d;">
-                    Lihat Semua →
-                </a>
-            </div>
-
-            {{-- Table — No horizontal dividers, hover row highlight --}}
-            <div class="overflow-x-auto">
-                <table class="w-full civic-table">
-                    <thead>
-                        <tr>
-                            <th class="px-8 py-3 text-left text-[11px] font-semibold uppercase tracking-widest" style="color: #3d4947; letter-spacing: 0.05rem;">Jenis Surat</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-widest" style="color: #3d4947; letter-spacing: 0.05rem;">ID</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-widest" style="color: #3d4947; letter-spacing: 0.05rem;">Tanggal</th>
-                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-widest" style="color: #3d4947; letter-spacing: 0.05rem;">Status</th>
-                            <th class="px-8 py-3 text-right text-[11px] font-semibold uppercase tracking-widest" style="color: #3d4947; letter-spacing: 0.05rem;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{-- Row 1 --}}
-                        <tr class="transition-colors cursor-pointer" style="border: none;" onmouseenter="this.style.backgroundColor='#f2f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                            <td class="px-8 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: rgba(0,104,93,0.08);">
-                                        <span class="material-icons-outlined text-base" style="color: #00685d;">home</span>
-                                    </div>
-                                    <span class="text-sm font-medium" style="color: #191c1e;">Surat Pengantar Domisili</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-4 text-xs font-mono" style="color: #6d7a77;">#RT06-8821</td>
-                            <td class="px-4 py-4 text-xs" style="color: #6d7a77;">20 Jun 2024</td>
-                            <td class="px-4 py-4">
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold" style="background-color: #c5eeb5; color: #2d4f25;">Selesai</span>
-                            </td>
-                            <td class="px-8 py-4 text-right">
-                                <button onclick="openSuratModal('Surat Pengantar Domisili','#RT06-8821','20 Jun 2024','Selesai','Surat telah selesai diproses dan dapat diunduh.','selesai')" class="text-xs font-semibold transition-colors hover:text-[#008376]" style="color: #00685d;">Lihat</button>
-                            </td>
-                        </tr>
-
-                        {{-- Row 2 --}}
-                        <tr class="transition-colors cursor-pointer" style="border: none;" onmouseenter="this.style.backgroundColor='#f2f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                            <td class="px-8 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: rgba(43,100,133,0.08);">
-                                        <span class="material-icons-outlined text-base" style="color: #2b6485;">work</span>
-                                    </div>
-                                    <span class="text-sm font-medium" style="color: #191c1e;">Surat Keterangan Usaha</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-4 text-xs font-mono" style="color: #6d7a77;">#RT06-8790</td>
-                            <td class="px-4 py-4 text-xs" style="color: #6d7a77;">15 Jun 2024</td>
-                            <td class="px-4 py-4">
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold" style="background-color: #ffdad6; color: #93000a;">Ditolak</span>
-                            </td>
-                            <td class="px-8 py-4 text-right">
-                                <button onclick="openSuratModal('Surat Keterangan Usaha','#RT06-8790','15 Jun 2024','Ditolak','Pengajuan ditolak karena dokumen pendukung tidak lengkap. Silakan ajukan ulang.','ditolak')" class="text-xs font-semibold transition-colors hover:text-[#008376]" style="color: #00685d;">Lihat</button>
-                            </td>
-                        </tr>
-
-                        {{-- Row 3 --}}
-                        <tr class="transition-colors cursor-pointer" style="border: none;" onmouseenter="this.style.backgroundColor='#f2f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                            <td class="px-8 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: rgba(65,101,56,0.08);">
-                                        <span class="material-icons-outlined text-base" style="color: #416538;">verified_user</span>
-                                    </div>
-                                    <span class="text-sm font-medium" style="color: #191c1e;">Surat Berkelakuan Baik</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-4 text-xs font-mono" style="color: #6d7a77;">#RT06-8815</td>
-                            <td class="px-4 py-4 text-xs" style="color: #6d7a77;">18 Jun 2024</td>
-                            <td class="px-4 py-4">
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold" style="background-color: #c5eeb5; color: #2d4f25;">Selesai</span>
-                            </td>
-                            <td class="px-8 py-4 text-right">
-                                <button onclick="openSuratModal('Surat Berkelakuan Baik','#RT06-8815','18 Jun 2024','Selesai','Surat telah ditandatangani dan distempel oleh Ketua RT 06.','selesai')" class="text-xs font-semibold transition-colors hover:text-[#008376]" style="color: #00685d;">Lihat</button>
-                            </td>
-                        </tr>
-
-                        {{-- Row 4 --}}
-                        <tr class="transition-colors cursor-pointer" style="border: none;" onmouseenter="this.style.backgroundColor='#f2f4f6'" onmouseleave="this.style.backgroundColor='transparent'">
-                            <td class="px-8 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: rgba(0,104,93,0.08);">
-                                        <span class="material-icons-outlined text-base" style="color: #00685d;">family_restroom</span>
-                                    </div>
-                                    <span class="text-sm font-medium" style="color: #191c1e;">Surat Keterangan Keluarga</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-4 text-xs font-mono" style="color: #6d7a77;">#RT06-8778</td>
-                            <td class="px-4 py-4 text-xs" style="color: #6d7a77;">10 Jun 2024</td>
-                            <td class="px-4 py-4">
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold" style="background-color: #c7e7ff; color: #064c6b;">Diproses</span>
-                            </td>
-                            <td class="px-8 py-4 text-right">
-                                <button onclick="openSuratModal('Surat Keterangan Keluarga','#RT06-8778','10 Jun 2024','Diproses','Surat sedang dalam proses verifikasi oleh Ketua RT 06.','diproses')" class="text-xs font-semibold transition-colors hover:text-[#008376]" style="color: #00685d;">Lihat</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-    @endif
-
-    {{-- INFO BANNER --}}
-    <section class="mb-4">
-        <div class="rounded-[1.5rem] p-6 lg:p-8" style="background-color: #eceef0;">
+        
+        {{-- Info Banner --}}
+        <div class="rounded-2xl p-6 bg-[#c7e7ff] text-[#064c6b] border border-[#a2d8ff]">
             <div class="flex items-start gap-4">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background-color: rgba(43,100,133,0.10);">
-                    <svg class="w-5 h-5" style="color: #2b6485;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
+                <span class="material-icons-outlined text-2xl mt-0.5">info</span>
                 <div>
-                    <h3 class="font-manrope font-bold text-sm mb-1" style="color: #191c1e;">Informasi Penting</h3>
-                    <p class="text-sm leading-relaxed" style="color: #3d4947;">
-                        Jadwal Siskamling periode ini telah diperbarui. Mohon cek kehadiran Anda untuk menjaga keamanan lingkungan kita.
+                    <h4 class="font-bold text-base mb-2">Informasi Tambahan Terkait Pengajuan Dokumen</h4>
+                    <p class="text-sm opacity-90 leading-relaxed">
+                        Pengajuan surat administrasi yang masuk di luar jam kerja (setelah pukul 20:00 WIB) atau pada hari libur nasional akan diproses oleh Ketua RT pada hari kerja berikutnya. Pastikan nomor kontak pada profil Anda sudah diperbarui agar Ketua RT dapat menghubungi Anda jika terdapat data tambahan yang perlu diklarifikasi.
                     </p>
                 </div>
             </div>
         </div>
-    </section>
-
-    {{-- ═══════════════════════════════════════════════════════════════
-         MODAL DETAIL SURAT
-    ═══════════════════════════════════════════════════════════════ --}}
-    <div id="modal-surat" class="fixed inset-0 z-50 hidden items-center justify-center p-4"
-         style="background-color: rgba(25,28,30,0.5); backdrop-filter: blur(4px);">
-        <div class="w-full max-w-md rounded-[1.5rem] shadow-2xl overflow-hidden" style="background-color: #fff;">
-            {{-- Modal Header --}}
-            <div class="flex items-center justify-between px-6 pt-6 pb-4" style="border-bottom: 1px solid #eceef0;">
-                <h2 class="font-manrope font-bold text-base" style="color: #191c1e;">Detail Surat</h2>
-                <button onclick="closeSuratModal()" class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-[#eceef0]">
-                    <svg class="w-4 h-4" style="color: #6d7a77;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-            {{-- Modal Body --}}
-            <div class="px-6 py-5 space-y-4">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium uppercase tracking-widest" style="color: #6d7a77;">Jenis Surat</span>
-                    <span id="modal-nama" class="text-sm font-semibold" style="color: #191c1e;"></span>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium uppercase tracking-widest" style="color: #6d7a77;">Nomor ID</span>
-                    <span id="modal-id" class="text-xs font-mono" style="color: #6d7a77;"></span>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium uppercase tracking-widest" style="color: #6d7a77;">Tanggal Pengajuan</span>
-                    <span id="modal-tanggal" class="text-sm" style="color: #191c1e;"></span>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium uppercase tracking-widest" style="color: #6d7a77;">Status</span>
-                    <span id="modal-status-badge"></span>
-                </div>
-                <div class="rounded-xl p-4" style="background-color: #f2f4f6;">
-                    <p class="text-xs font-medium mb-1" style="color: #6d7a77;">Catatan</p>
-                    <p id="modal-catatan" class="text-sm" style="color: #3d4947;"></p>
-                </div>
-            </div>
-            {{-- Modal Footer --}}
-            <div id="modal-footer" class="px-6 pb-6 flex gap-3">
-                <button onclick="closeSuratModal()" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors" style="background-color: #eceef0; color: #3d4947;">Tutup</button>
-                <a id="modal-download-btn" href="#"
-                   onclick="alert('File dummy — akan diganti dengan file asli saat dokumen tersedia.')"
-                   class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-md"
-                   style="background: linear-gradient(135deg, #00685d, #008376);">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                    </svg>
-                    Download Surat
-                </a>
-            </div>
-        </div>
     </div>
 
-@push('scripts')
-<script>
-const statusStyles = {
-    selesai:  { bg: '#c5eeb5', color: '#2d4f25', label: 'Selesai' },
-    ditolak:  { bg: '#ffdad6', color: '#93000a', label: 'Ditolak' },
-    diproses: { bg: '#c7e7ff', color: '#064c6b', label: 'Sedang Diproses' },
-    menunggu: { bg: '#fff0c2', color: '#7a5800', label: 'Menunggu' },
-};
-
-function openSuratModal(nama, id, tanggal, status, catatan, statusKey) {
-    document.getElementById('modal-nama').textContent    = nama;
-    document.getElementById('modal-id').textContent      = id;
-    document.getElementById('modal-tanggal').textContent = tanggal;
-    document.getElementById('modal-catatan').textContent = catatan;
-
-    const s = statusStyles[statusKey] || statusStyles.menunggu;
-    document.getElementById('modal-status-badge').innerHTML =
-        `<span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold"
-               style="background-color:${s.bg};color:${s.color};">${s.label}</span>`;
-
-    // Show download button only for Selesai/Disetujui
-    const btn = document.getElementById('modal-download-btn');
-    btn.style.display = (statusKey === 'selesai') ? 'inline-flex' : 'none';
-
-    const modal = document.getElementById('modal-surat');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeSuratModal() {
-    const modal = document.getElementById('modal-surat');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-    document.body.style.overflow = '';
-}
-
-document.getElementById('modal-surat').addEventListener('click', function(e) {
-    if (e.target === this) closeSuratModal();
-});
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeSuratModal();
-});
-</script>
+@push('styles')
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1; 
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #bcc9c6; 
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #00685d; 
+    }
+</style>
 @endpush
 
 @endsection

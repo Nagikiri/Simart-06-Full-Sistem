@@ -1,91 +1,99 @@
-# SIMART-06 — Sistem Manajemen RT 06
+# SIMART-06 — Sistem Manajemen RT
 
-Aplikasi web administrasi surat-menyurat berbasis **Laravel** untuk RT 06, dibangun menggunakan desain sistem **Civic Curator**.
+Aplikasi surat-menyurat administrasi RT berbasis Laravel 13.
 
-## Fitur Utama
+---
 
-### Dashboard Warga
-- Pengajuan surat keterangan (Domisili, Usaha, Tidak Mampu, Pengantar Umum)
-- Download template surat dari RT → isi sendiri → upload → ajukan
-- Riwayat pengajuan dengan tracking status real-time
-- Notifikasi dropdown di navbar
-- Profile management (edit profil & ganti password via modal)
+## 🚀 Cara Setup (Fresh Install)
 
-### Dashboard Ketua RT
-- Verifikasi pengajuan surat masuk (3-tab: Pengajuan, Warga, Riwayat)
-- Upload & manajemen template surat (PDF/DOCX) untuk diunduh warga
-- Buat dan kirim pengumuman ke seluruh warga RT 06
-- Statistik demografi warga dan tren pengajuan
-- Pengaturan notifikasi & keamanan akun
-
-## Tech Stack
-
-| Layer | Teknologi |
-|---|---|
-| Backend | Laravel 11 |
-| Frontend | Blade Templates + Tailwind CSS |
-| Auth | Laravel Breeze |
-| Icons | Google Material Icons Outlined |
-| Chart | ApexCharts |
-| Font | Manrope (Google Fonts) |
-
-## Instalasi
-
+### 1. Clone / Extract Proyek
 ```bash
-# Clone repository
-git clone https://github.com/username/simart-06.git
+# Ekstrak zip ke folder, lalu masuk ke direktori proyek
 cd simart-06
+```
 
-# Install dependencies
+### 2. Install Dependensi
+```bash
 composer install
 npm install
+```
 
-# Setup environment
+### 3. Konfigurasi Environment
+```bash
+# Salin file env
 cp .env.example .env
-php artisan key:generate
 
-# Database
+# Generate app key
+php artisan key:generate
+```
+
+Edit `.env`, sesuaikan koneksi database:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=simart
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 4. Buat Database
+Buka phpMyAdmin / DBeaver / MySQL CLI, buat database baru bernama `simart`.
+
+### 5. Jalankan Migration & Seeder
+```bash
 php artisan migrate
 php artisan db:seed
+```
 
-# Build assets
-npm run dev
+Seeder akan otomatis membuat:
+- Semua tabel (via migration)
+- 12 template surat
+- Akun RT Admin
+- Akun Warga Demo
 
-# Jalankan server
+### 6. Link Storage
+```bash
+php artisan storage:link
+```
+
+### 7. Jalankan Server
+```bash
 php artisan serve
 ```
+Buka: **http://localhost:8000**
 
-## Struktur Halaman
+---
 
-```
-resources/views/
-├── components/
-│   ├── navbar.blade.php          # Navbar + dropdown notifikasi
-│   ├── sidebar-warga.blade.php   # Sidebar dashboard warga
-│   └── sidebar-rt.blade.php      # Sidebar dashboard RT
-├── dashboard/
-│   ├── warga.blade.php           # Dashboard utama warga
-│   └── rt.blade.php              # Dashboard utama Ketua RT
-├── warga/
-│   ├── pengajuan/                # Daftar & form pengajuan surat
-│   ├── riwayat/                  # Riwayat pengajuan
-│   ├── template/                 # Download template surat
-│   └── profile/                  # Profil & pengaturan warga
-└── rt/
-    ├── verifikasi/               # Proses pengajuan dari warga
-    ├── template/                 # Upload & kelola template surat
-    ├── settings/                 # Pengaturan RT & notifikasi
-    └── dashboard.blade.php       # (legacy redirect)
-```
+## 🔑 Kredensial Login
 
-## Status Pengembangan
+| Role | Email | Password |
+|------|-------|----------|
+| **Ketua RT** | `rt06@simart.local` | `rtsimart06` |
+| **Warga Demo** | `warga@simart.local` | `wargasimart` |
 
-- ✅ Frontend (Civic Curator Design System)
-- ✅ Authentication (Login / Register / Role-based)
-- ⏳ Backend Controllers (CRUD pengajuan, file storage)
-- ⏳ Notifikasi real-time (Laravel Echo / Pusher)
-- ⏳ File storage (Laravel Storage + S3/Local)
+---
 
-## Lisensi
+## 🏗️ Alur Aplikasi
 
-MIT License — Proyek akademik untuk keperluan KKN/Tugas Akhir.
+1. **Warga** login → pilih jenis surat → isi form → kirim ke RT
+2. **RT** login → lihat daftar pengajuan → preview surat → klik **Setujui**
+3. Sistem otomatis generate PDF bertanda tangan
+4. **Warga** dapat melihat riwayat dan **mengunduh** PDF yang sudah jadi
+
+---
+
+## 🛠️ Tech Stack
+
+- **Backend**: Laravel 13 (PHP 8.3)
+- **Database**: MySQL
+- **PDF**: barryvdh/laravel-dompdf
+- **Frontend**: Blade + Vanilla CSS + TailwindCSS CDN
+
+---
+
+## ⚠️ Catatan Penting
+
+- Pastikan ekstensi PHP `gd`, `fileinfo`, `pdo_mysql` aktif di Laragon/XAMPP
+- Folder `storage/app/private` harus bisa ditulis (writable)
+- Jika di Windows dengan Laragon, gunakan PHP 8.3

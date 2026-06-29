@@ -116,24 +116,24 @@
                     @enderror
                 </div>
 
-                {{-- NIK --}}
+                {{-- No HP --}}
                 <div class="mb-5">
-                    <label for="nik" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: #3d4947; letter-spacing: 0.05rem;">
-                        NIK (Nomor Induk Kependudukan)
+                    <label for="no_hp" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: #3d4947; letter-spacing: 0.05rem;">
+                        Nomor Handphone (WhatsApp)
                     </label>
                     <input
-                        id="nik"
+                        id="no_hp"
                         type="text"
-                        name="nik"
-                        value="{{ old('nik') }}"
-                        placeholder="Masukkan 16 digit NIK Anda"
+                        name="no_hp"
+                        value="{{ old('no_hp') }}"
+                        placeholder="Contoh: 08123456789"
                         required
-                        maxlength="16"
                         inputmode="numeric"
-                        class="civic-input w-full px-4 py-3 rounded-xl text-sm @error('nik') is-error @enderror"
+                        class="civic-input w-full px-4 py-3 rounded-xl text-sm @error('no_hp') is-error @enderror"
                         style="background-color: #ffffff; color: #191c1e;"
                     >
-                    @error('nik')
+                    <p class="mt-1 text-xs text-gray-500">Gunakan format Indonesia (diawali 08, 628, atau +628)</p>
+                    @error('no_hp')
                         <p class="mt-2 text-xs font-medium" style="color: #ba1a1a;">{{ $message }}</p>
                     @enderror
                 </div>
@@ -154,6 +154,29 @@
                         style="background-color: #ffffff; color: #191c1e;"
                     >
                     @error('email')
+                        <p class="mt-2 text-xs font-medium" style="color: #ba1a1a;">{{ $message }}</p>
+                    @enderror
+                </div>
+
+
+
+                {{-- Jenis Kelamin --}}
+                <div class="mb-5">
+                    <label for="gender" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: #3d4947; letter-spacing: 0.05rem;">
+                        Jenis Kelamin
+                    </label>
+                    <select
+                        id="gender"
+                        name="gender"
+                        required
+                        class="civic-input w-full px-4 py-3 rounded-xl text-sm @error('gender') is-error @enderror"
+                        style="background-color: #ffffff; color: #191c1e;"
+                    >
+                        <option value="" disabled {{ old('gender') ? '' : 'selected' }}>-- Pilih Jenis Kelamin --</option>
+                        <option value="Laki-laki" {{ old('gender') === 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                        <option value="Perempuan" {{ old('gender') === 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                    </select>
+                    @error('gender')
                         <p class="mt-2 text-xs font-medium" style="color: #ba1a1a;">{{ $message }}</p>
                     @enderror
                 </div>
