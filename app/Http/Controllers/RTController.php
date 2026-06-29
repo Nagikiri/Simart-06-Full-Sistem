@@ -42,10 +42,54 @@ class RTController extends Controller
             $html = $dataTambahan['_html_final'];
         } else {
             $html = $pengajuan->template->content;
+            
+            // Peta field statis untuk format template baru
+            $staticMappings = [
+                'NAMA' => $dataTambahan['nama_lengkap'] ?? '',
+                'NAMA_LENGKAP' => $dataTambahan['nama_lengkap'] ?? '',
+                'NAMA_WARGA' => $dataTambahan['nama_lengkap'] ?? '',
+                
+                'NIK' => $dataTambahan['nik'] ?? '',
+                
+                'TTL' => $dataTambahan['tempat_tanggal_lahir'] ?? '',
+                'TEMPAT_LAHIR' => $dataTambahan['tempat_tanggal_lahir'] ?? '',
+                'TANGGAL_LAHIR' => $dataTambahan['tempat_tanggal_lahir'] ?? '',
+                
+                'JENIS_KELAMIN' => $dataTambahan['jenis_kelamin'] ?? '',
+                
+                'AGAMA' => $dataTambahan['agama'] ?? '',
+                
+                'PEKERJAAN' => $dataTambahan['pekerjaan'] ?? '',
+                
+                'ALAMAT' => $dataTambahan['alamat'] ?? '',
+                'ALAMAT_LENGKAP' => $dataTambahan['alamat'] ?? '',
+                'ALAMAT_WARGA' => $dataTambahan['alamat'] ?? '',
+                
+                'KEPERLUAN' => $dataTambahan['tujuan_surat'] ?? '',
+                'TUJUAN_SURAT' => $dataTambahan['tujuan_surat'] ?? '',
+                'KEPERLUAN_SURAT' => $dataTambahan['tujuan_surat'] ?? '',
+                
+                'NOMOR_RT' => '06',
+            ];
+            
+            // Ganti "Ketua RT … Kelurahan" menjadi "Ketua RT [NOMOR_RT] Kelurahan" sebelum mapping berjalan
+            $html = preg_replace('/Ketua RT\s*(?:…|\.{3,})\s*Kelurahan/i', 'Ketua RT [NOMOR_RT] Kelurahan', $html);
+            
+            foreach ($staticMappings as $placeholder => $value) {
+                if (!empty($value)) {
+                    $html = str_replace('[' . $placeholder . ']', e($value), $html);
+                }
+            }
+
             foreach ($dataTambahan as $key => $value) {
                 if ($key === '_html_final') continue;
                 $cleanKey = str_starts_with($key, 'field_') ? substr($key, 6) : $key;
+                
+                // Format template lama (dengan span id="field_...")
                 $html = preg_replace('/(<span[^>]*id="field_' . preg_quote($cleanKey, '/') . '"[^>]*>)(.*?)(<\/span>)/i', '$1' . e($value) . '$3', $html);
+                
+                // Format template baru (dengan [NAMA_FIELD])
+                $html = str_replace('[' . strtoupper($cleanKey) . ']', e($value), $html);
             }
         }
 
@@ -57,21 +101,25 @@ class RTController extends Controller
         $namaRT    = auth()->user()->name;
         $rtWarga   = auth()->user()->warga;
         $ttdMode   = $request->input('ttd_mode', 'text');
-        $ttdHtml   = '<div style="font-family: \'Brush Script MT\', cursive; font-size: 32px; color: #191c1e;">' . $namaRT . '</div>';
+        $ttdHtml = '<div style="height:60px;display:flex;align-items:center;justify-content:center;">'
+                 .'<span style="font-family:\'Brush Script MT\',cursive;font-size:28px;color:#191c1e;">'
+                 . e($namaRT) .'</span></div>';
 
         if ($ttdMode === 'profil' && $rtWarga && $rtWarga->tanda_tangan && Storage::disk('public')->exists($rtWarga->tanda_tangan)) {
             // Gunakan gambar TTD dari profil RT
             $ttdPath = Storage::disk('public')->path($rtWarga->tanda_tangan);
             $ttdData = base64_encode(file_get_contents($ttdPath));
             $ttdMime = mime_content_type($ttdPath);
-            $ttdHtml = '<img src="data:' . $ttdMime . ';base64,' . $ttdData . '" style="width:160px; height:auto; max-height:80px; object-fit:contain;" alt="TTD RT">';
+            // Setup variabel data gambar (akan dirender nanti)
+            $ttdHtml = '<div style="text-align: center;"><img src="data:' . $ttdMime . ';base64,' . $ttdData . '" style="max-width:150px; max-height:60px; width:auto; height:auto; object-fit:contain; display:block; margin:0 auto;" alt="TTD RT" /></div>';
 
         } elseif ($ttdMode === 'upload' && $request->hasFile('ttd_upload')) {
             // Gunakan gambar TTD yang di-upload on-the-spot dari modal
             $uploadedFile = $request->file('ttd_upload');
             $ttdData = base64_encode(file_get_contents($uploadedFile->getRealPath()));
             $ttdMime = $uploadedFile->getMimeType();
-            $ttdHtml = '<img src="data:' . $ttdMime . ';base64,' . $ttdData . '" style="width:160px; height:auto; max-height:80px; object-fit:contain;" alt="TTD RT">';
+            
+            $ttdHtml = '<div style="text-align: center;"><img src="data:' . $ttdMime . ';base64,' . $ttdData . '" style="max-width:150px; max-height:60px; width:auto; height:auto; object-fit:contain; display:block; margin:0 auto;" alt="TTD RT" /></div>';
 
             // Simpan juga ke profil RT untuk dipakai lain kali (opsional)
             if ($rtWarga) {
@@ -104,8 +152,111 @@ class RTController extends Controller
         $html = preg_replace('/min-height:\s*297mm;?/i', '', $html);
         $html = preg_replace('/width:\s*210mm;?/i', 'width: 100%;', $html);
 
-        $html = preg_replace('/(<div[^>]*id="signature_area"[^>]*>)(.*?)(<\/div>)/is', '$1' . $ttdHtml . '$3', $html);
-
+        // 3. Cari dan Ganti nama dalam kurung kosong (............) di bawah tanda tangan
+        $namaPemohonTtd = !empty($dataTambahan['field_NAMA_PEMOHON']) ? $dataTambahan['field_NAMA_PEMOHON'] : (!empty($dataTambahan['field_NAMA_TTD']) ? $dataTambahan['field_NAMA_TTD'] : ($pengajuan->warga->user->name ?? 'Pemohon'));
+        $namaRTTtd = !empty($dataTambahan['field_NAMA_RT']) ? $dataTambahan['field_NAMA_RT'] : ($namaRT ?? 'Ketua RT');
+        
+        // Regex pintar untuk mencari kurung kosong yang berisi titik, spasi, garis bawah, dll (termasuk jika hanya berisi 1 spasi atau kosong)
+        $bracketRegex = '/\(\s*(?:&emsp;|&nbsp;|\.|_|\s|&#160;|<sup[^>]*>.*?<\/sup>){1,}\s*\)/i';
+        preg_match_all($bracketRegex, $html, $matches);
+        $bracketCount = count($matches[0]);
+        
+        if ($bracketCount === 1) {
+            // Jika cuma ada 1 kurung, berarti hanya Pemohon (karena RT tidak tanda tangan di surat ini)
+            $html = preg_replace($bracketRegex, '(<span style="font-weight:bold;">' . e($namaPemohonTtd) . '</span>)', $html, 1);
+        } elseif ($bracketCount >= 2) {
+            // Jika ada 2 kurung, sebelah kiri pasti RT, sebelah kanan pasti Pemohon
+            $html = preg_replace($bracketRegex, '(<span style="font-weight:bold;">' . e($namaRTTtd) . '</span>)', $html, 1);
+            $html = preg_replace($bracketRegex, '(<span style="font-weight:bold;">' . e($namaPemohonTtd) . '</span>)', $html, 1);
+        }
+        
+        // 4. Injeksi Gambar Tanda Tangan RT (Hanya untuk surat yang membutuhkan)
+        if (strpos($html, 'id="signature_area"') !== false) {
+            $ttdHtmlArea = '<div style="height:64px;display:flex;align-items:center;justify-content:center;overflow:hidden;">'
+                . '<img src="data:' . $ttdMime . ';base64,' . $ttdData . '" style="max-width:150px; max-height:60px; width:auto; height:auto; object-fit:contain; display:block; margin:0 auto;" alt="TTD RT" />'
+                . '</div><div style="border-top:1px solid #000;padding-top:2px;"><p style="margin:0;font-size:11pt;text-align:center;"><strong>(' . e($namaRTTtd) . ')</strong></p></div>';
+            $html = preg_replace('/(<div[^>]*id="signature_area"[^>]*>)(.*?)(<\/div>)/is', $ttdHtmlArea, $html);
+        } else {
+            // Gunakan DOMDocument untuk mencari posisi Ketua RT dan memasukkan TTD di kolom bawahnya secara organik
+            $dom = new \DOMDocument();
+            @$dom->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            
+            $xpath = new \DOMXPath($dom);
+            // Cari node teks yang mengandung kata kunci "Ketua RT" atau "Ketua Rukun Tetangga"
+            $textNodes = $xpath->query("//text()[contains(., 'Ketua RT') or contains(., 'Ketua Rukun Tetangga')]");
+            
+            $injected = false;
+            foreach ($textNodes as $textNode) {
+                // Cari TD ancestor (tabel tempat teks ini berada)
+                $td = $textNode;
+                while ($td !== null && $td->nodeName !== 'td') {
+                    $td = $td->parentNode;
+                }
+                
+                if ($td !== null) {
+                    $tr1 = $td->parentNode;
+                    // Lanjut ke baris berikutnya (tempat nama & ruang tanda tangan berada)
+                    $tr2 = $tr1->nextSibling;
+                    while ($tr2 !== null && $tr2->nodeName !== 'tr') {
+                        $tr2 = $tr2->nextSibling;
+                    }
+                    
+                    if ($tr2 !== null) {
+                        // Cari index TD yang sejajar (vertikal)
+                        $tdIndex = 0;
+                        $temp = $td;
+                        while ($temp->previousSibling !== null) {
+                            $temp = $temp->previousSibling;
+                            if ($temp->nodeName === 'td') $tdIndex++;
+                        }
+                        
+                        $currIndex = 0;
+                        $targetTd = null;
+                        foreach ($tr2->childNodes as $child) {
+                            if ($child->nodeName === 'td') {
+                                if ($currIndex === $tdIndex) {
+                                    $targetTd = $child;
+                                    break;
+                                }
+                                $currIndex++;
+                            }
+                        }
+                        
+                        if ($targetTd !== null) {
+                            // Hilangkan padding bawaan tabel dan margin ekstrem (menghindari penumpukan)
+                            // Prompt meminta TANDA TANGAN TIDAK MENIMPA TEKS (KOTAK AMAN)
+                            foreach ($targetTd->parentNode->childNodes as $sibling) {
+                                if ($sibling->nodeName === 'td') {
+                                    $style = $sibling->getAttribute('style');
+                                    $style = preg_replace('/padding-top:\s*\d+px;?/', 'padding-top: 2px;', $style);
+                                    if (strpos($style, 'padding-top') === false) {
+                                        $style .= '; padding-top: 2px;';
+                                    }
+                                    $sibling->setAttribute('style', $style);
+                                }
+                            }
+                            
+                            // Gunakan KOTAK AMAN (tinggi tetap, max-height 60px) tanpa margin negatif
+                            // Sesuai dengan instruksi A1 dari prompt.
+                            $ttdHtml = '<div style="height:64px;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:2px;"><img src="data:' . $ttdMime . ';base64,' . $ttdData . '" style="max-width:150px; max-height:60px; width:auto; height:auto; object-fit:contain; display:block; margin:0 auto;" alt="TTD RT" /></div>';
+                            
+                            $frag = $dom->createDocumentFragment();
+                            $frag->appendXML($ttdHtml);
+                            
+                            // Masukkan TTD di dalam kolom bawah, persis di atas teks namanya!
+                            $targetTd->insertBefore($frag, $targetTd->firstChild);
+                            $injected = true;
+                            break; // Hanya inject sekali
+                        }
+                    }
+                }
+            }
+            
+            if ($injected) {
+                $html = $dom->saveHTML();
+            }
+            // Jika tidak di-inject (karena template tidak butuh TTD RT, misalnya Surat Belum Pernah Menikah), biarkan saja!
+        }
         // Wrap with proper HTML document structure for final PDF
         $fullDocument = '<!DOCTYPE html>
         <html>
@@ -113,8 +264,17 @@ class RTController extends Controller
             <meta charset="utf-8">
             <title>Surat ' . $autoNomor . '</title>
             <style>
-                @page { margin: 2cm 2.5cm; }
-                body { background: #fff; margin: 0; padding: 0; font-family: "Times New Roman", Times, serif !important; color: #000; line-height: 1.5; font-size: 14px; }
+                @page { size: A4; margin: 1.2cm 1.6cm; }
+                html, body { margin:0; padding:0; }
+                body { background: #fff; font-family: "Times New Roman", Times, serif !important; color: #000; line-height: 1.35; font-size: 11.5pt; }
+                table, tr, td, .sign-block, .signature-row { page-break-inside: avoid; }
+                p { margin: 4px 0; }
+                
+                .mb-20, .mb-12, .mb-8 { margin-bottom: 18px !important; }
+                .mb-6 { margin-bottom: 12px !important; }
+                [style*="margin:0 0 60px"] { margin-bottom: 28px !important; }
+                [id="signature_area"] { height: 60px !important; }
+                .ttd-img { max-height:55px; max-width:140px; object-fit:contain; }
                 table { width: 100%; border-collapse: collapse; }
                 td { padding: 4px 0; vertical-align: top; }
                 .kertas > div { width: auto !important; min-height: auto !important; padding: 0 !important; margin: 0 !important; box-sizing: content-box !important; }
@@ -383,8 +543,7 @@ class RTController extends Controller
     public function updatePasswordRT(Request $request)
     {
         $validated = $request->validate([
-            'current_password' => 'required|current_password',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8',
         ]);
 
         auth()->user()->update(['password' => bcrypt($validated['password'])]);
