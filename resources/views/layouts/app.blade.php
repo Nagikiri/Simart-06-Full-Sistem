@@ -138,8 +138,12 @@
                     </div>
                 </main>
 
-                {{-- Footer --}}
-                @include('components.footer')
+                {{-- Footer: only for Warga --}}
+                @auth
+                    @if(auth()->user()->role === 'warga')
+                        @include('components.footer')
+                    @endif
+                @endauth
             </div>
         </div>
     </div>
