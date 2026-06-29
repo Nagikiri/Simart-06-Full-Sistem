@@ -238,8 +238,7 @@ class RTController extends Controller
                             
                             // Gunakan KOTAK AMAN (tinggi tetap, max-height 60px) tanpa margin negatif
                             // Sesuai dengan instruksi A1 dari prompt.
-                            $ttdHtml = '<div style="height:64px;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:2px;"><img src="data:' . $ttdMime . ';base64,' . $ttdData . '" style="max-width:150px; max-height:60px; width:auto; height:auto; object-fit:contain; display:block; margin:0 auto;" alt="TTD RT" /></div>';
-                            
+                            // Gunakan $ttdHtml yang sudah digenerate di atas (bisa text mode atau image mode)
                             $frag = $dom->createDocumentFragment();
                             $frag->appendXML($ttdHtml);
                             
