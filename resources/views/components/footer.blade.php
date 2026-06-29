@@ -19,7 +19,7 @@
                 <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 mb-4">
                     <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
                          style="background: linear-gradient(135deg, #00685d, #008376);">
-                        S
+                        <span class="material-icons-outlined" style="font-size: 16px;">home</span>
                     </div>
                     <span class="font-manrope font-bold text-lg" style="color: #191c1e;">SIMART-06</span>
                 </a>

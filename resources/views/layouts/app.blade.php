@@ -129,15 +129,18 @@
             {{-- Navbar --}}
             @include('components.navbar')
 
-            {{-- Page Content --}}
-            <main class="flex-1 overflow-y-auto page-fade-in">
-                <div class="max-w-7xl mx-auto px-6 lg:px-8 py-8">
-                    @yield('content')
-                </div>
-            </main>
+            {{-- Scrollable Content Area --}}
+            <div class="flex-1 overflow-y-auto flex flex-col page-fade-in">
+                {{-- Page Content --}}
+                <main class="flex-1">
+                    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-8">
+                        @yield('content')
+                    </div>
+                </main>
 
-            {{-- Footer --}}
-            @include('components.footer')
+                {{-- Footer --}}
+                @include('components.footer')
+            </div>
         </div>
     </div>
 
