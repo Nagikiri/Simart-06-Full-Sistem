@@ -4,7 +4,7 @@ Aplikasi surat-menyurat administrasi RT berbasis Laravel 13.
 
 ---
 
-## 🚀 Cara Setup (Fresh Install)
+## Cara Setup (Fresh Install)
 
 ### 1. Clone / Extract Proyek
 ```bash
@@ -65,7 +65,7 @@ Buka: **http://localhost:8000**
 
 ---
 
-## 🔑 Kredensial Login
+## Kredensial Login
 
 | Role | Email | Password |
 |------|-------|----------|
@@ -74,7 +74,7 @@ Buka: **http://localhost:8000**
 
 ---
 
-## 🏗️ Alur Aplikasi
+## Alur Aplikasi
 
 1. **Warga** login → pilih jenis surat → isi form → kirim ke RT
 2. **RT** login → lihat daftar pengajuan → preview surat → klik **Setujui**
@@ -83,7 +83,7 @@ Buka: **http://localhost:8000**
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Backend**: Laravel 13 (PHP 8.3)
 - **Database**: MySQL
