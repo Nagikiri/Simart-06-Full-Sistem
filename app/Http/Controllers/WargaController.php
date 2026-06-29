@@ -194,8 +194,10 @@ class WargaController extends Controller
             ];
         });
 
-        // Ambil pengumuman terbaru
-        $pengumuman = \App\Models\Pengumuman::orderBy('created_at', 'desc')->get();
+        // Ambil pengumuman terbaru yang belum lewat 1 hari dari waktu selesai
+        $pengumuman = \App\Models\Pengumuman::where('waktu_selesai', '>', now()->subDay())
+                                            ->orderBy('created_at', 'desc')
+                                            ->get();
 
         return view('dashboard.warga', compact(
             'stats', 'pengajuanAktif', 'riwayatTerakhir', 'aktivitas', 'warga', 'pengumuman'

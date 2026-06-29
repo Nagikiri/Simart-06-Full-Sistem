@@ -61,11 +61,11 @@ return [
     |
     | Here you may specify the default timezone for your application, which
     | will be used by the PHP date and date-time functions. The timezone
-    | is set to "Asia/Jakarta" by default as it is suitable for Indonesia.
+    | is set to "Asia/Makassar" by default as it is suitable for WITA.
     |
     */
 
-    'timezone' => env('APP_TIMEZONE', 'Asia/Jakarta'),
+    'timezone' => env('APP_TIMEZONE', 'Asia/Makassar'),
 
     /*
     |--------------------------------------------------------------------------

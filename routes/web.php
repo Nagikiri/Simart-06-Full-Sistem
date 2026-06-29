@@ -13,6 +13,14 @@ Route::get('/', function () {
     return view('index');
 })->name('home');
 
+Route::get('/privacy', function () {
+    return view('privacy');
+})->name('privacy');
+
+Route::get('/terms', function () {
+    return view('terms');
+})->name('terms');
+
 // Auth Routes
 Route::get('/register', [AuthController::class, 'register'])->middleware('guest')->name('register');
 Route::post('/register', [AuthController::class, 'store'])->middleware('guest')->name('register.store');

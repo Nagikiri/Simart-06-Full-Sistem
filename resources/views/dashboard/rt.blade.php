@@ -36,11 +36,17 @@
     
     $latestPengajuan = \App\Models\Pengajuan::with('warga')->orderBy('created_at', 'desc')->take(4)->get();
     
-    $domisiliCount = \App\Models\Pengajuan::where('jenis_surat', 'domisili')->count();
-    $skuCount = \App\Models\Pengajuan::where('jenis_surat', 'usaha')->count();
-    $sktmCount = \App\Models\Pengajuan::where('jenis_surat', 'tidak_mampu')->count();
-    $pengantarCount = \App\Models\Pengajuan::where('jenis_surat', 'pengantar')->count();
-    $totalPengajuan = $domisiliCount + $skuCount + $sktmCount + $pengantarCount;
+    // Tren Pengajuan: 5 jenis surat terbanyak
+    $top5Surat = \App\Models\Pengajuan::select('jenis_surat', \DB::raw('count(*) as total'))
+        ->groupBy('jenis_surat')
+        ->orderBy('total', 'desc')
+        ->take(5)
+        ->get();
+    
+    $totalPengajuan = \App\Models\Pengajuan::count();
+    
+    // Warna untuk tren
+    $trendColors = ['#00685d', '#2b6485', '#416538', '#8b6914', '#ba1a1a'];
 @endphp
 
     {{-- Quick Stats --}}
@@ -153,20 +159,19 @@
             <div class="bg-white rounded-[1.5rem] p-6 mt-6">
                 <h3 class="font-manrope font-bold text-base mb-5" style="color:#191c1e;">Tren Pengajuan</h3>
                 <div class="space-y-4">
-                    @if($totalPengajuan > 0)
-                        @foreach([
-                            ['Pengantar Domisili', $domisiliCount, round(($domisiliCount / $totalPengajuan) * 100) . '%', '#00685d'],
-                            ['Keterangan Usaha', $skuCount, round(($skuCount / $totalPengajuan) * 100) . '%', '#2b6485'],
-                            ['Tidak Mampu', $sktmCount, round(($sktmCount / $totalPengajuan) * 100) . '%', '#416538'],
-                            ['Pengantar Umum', $pengantarCount, round(($pengantarCount / $totalPengajuan) * 100) . '%', '#8b6914']
-                        ] as [$label, $val, $w, $c])
+                    @if($totalPengajuan > 0 && $top5Surat->count() > 0)
+                        @foreach($top5Surat as $index => $tren)
+                        @php
+                            $persen = round(($tren->total / $totalPengajuan) * 100);
+                            $warna = $trendColors[$index % count($trendColors)];
+                        @endphp
                         <div>
                             <div class="flex justify-between mb-1.5">
-                                <span class="text-sm font-medium" style="color:#3d4947;">{{ $label }}</span>
-                                <span class="text-sm font-bold" style="color:#191c1e;">{{ $val }}</span>
+                                <span class="text-sm font-medium capitalize" style="color:#3d4947;">{{ str_replace('_', ' ', $tren->jenis_surat) }}</span>
+                                <span class="text-sm font-bold" style="color:#191c1e;">{{ $tren->total }}</span>
                             </div>
                             <div class="w-full rounded-full h-2" style="background-color:#eceef0;">
-                                <div class="h-2 rounded-full" style="width:{{ $w }};background-color:{{ $c }};"></div>
+                                <div class="h-2 rounded-full" style="width:{{ $persen }}%;background-color:{{ $warna }};"></div>
                             </div>
                         </div>
                         @endforeach
@@ -179,8 +184,8 @@
 
         {{-- Right: Demografi + Notifikasi (side by side on same row) --}}
         <div class="space-y-6">
-            {{-- Demografi & Notifikasi: 2 card side by side --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {{-- Demografi & Notifikasi: stacked vertically --}}
+            <div class="grid grid-cols-1 gap-6">
                 <div class="bg-white rounded-[1.5rem] p-5">
                     <h3 class="font-manrope font-bold text-sm mb-3" style="color:#191c1e;">Demografi Warga</h3>
                     @if($totalWarga > 0)
@@ -208,9 +213,12 @@
                         <h3 class="font-manrope font-bold text-sm" style="color:#191c1e;">Notifikasi</h3>
                         <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background-color:#eceef0;color:#6d7a77;">0 Baru</span>
                     </div>
-                    <div class="flex flex-col items-center justify-center py-6 text-center">
-                        <span class="material-icons-outlined text-xl text-[#6d7a77] mb-1">notifications_off</span>
-                        <p class="text-xs text-[#6d7a77]">Belum ada notifikasi.</p>
+                    {{-- Dummy list for notifications --}}
+                    <div class="space-y-3 mt-4">
+                        <div class="flex flex-col items-center justify-center py-6 text-center">
+                            <span class="material-icons-outlined text-xl text-[#6d7a77] mb-1">notifications_off</span>
+                            <p class="text-xs text-[#6d7a77]">Belum ada notifikasi baru hari ini.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -401,12 +409,12 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="text-xs font-semibold uppercase tracking-widest block mb-1.5" style="color:#6d7a77;">Waktu Mulai (Opsional)</label>
-                        <input type="datetime-local" name="waktu_mulai" class="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none" style="background-color:#f2f4f6;color:#191c1e;border:none;" title="Kosongkan jika mulai sekarang">
+                        <label class="text-xs font-semibold uppercase tracking-widest block mb-1.5" style="color:#6d7a77;">Waktu Mulai <span class="text-red-500">*</span></label>
+                        <input type="datetime-local" name="waktu_mulai" class="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none" style="background-color:#f2f4f6;color:#191c1e;border:none;" required>
                     </div>
                     <div>
-                        <label class="text-xs font-semibold uppercase tracking-widest block mb-1.5" style="color:#6d7a77;">Waktu Selesai (Opsional)</label>
-                        <input type="datetime-local" name="waktu_selesai" class="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none" style="background-color:#f2f4f6;color:#191c1e;border:none;" title="Kosongkan jika sampai selesai">
+                        <label class="text-xs font-semibold uppercase tracking-widest block mb-1.5" style="color:#6d7a77;">Waktu Selesai <span class="text-red-500">*</span></label>
+                        <input type="datetime-local" name="waktu_selesai" class="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none" style="background-color:#f2f4f6;color:#191c1e;border:none;" required>
                     </div>
                 </div>
                 <div class="rounded-xl p-3 flex items-start gap-2" style="background-color:#eceef0;">
@@ -445,7 +453,7 @@ function updateRTDate() {
     const year = now.getFullYear();
     const hours = String(now.getHours()).padStart(2,'0');
     const mins = String(now.getMinutes()).padStart(2,'0');
-    el.textContent = `${day}, ${date} ${month} ${year} — ${hours}:${mins} WIB — RT 06`;
+    el.textContent = `${day}, ${date} ${month} ${year} — ${hours}:${mins} WITA — RT 06`;
 }
 updateRTDate();
 setInterval(updateRTDate, 30000);

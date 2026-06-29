@@ -60,65 +60,19 @@
         @endforelse
     </div>
 
-    {{-- MODAL PREVIEW --}}
-    <div id="pdf-viewer-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 sm:p-6"
-         style="background-color: rgba(25,28,30,0.6); backdrop-filter: blur(4px); overflow-y: auto;">
-        
-        <div class="w-full max-w-4xl bg-white rounded-[1.5rem] shadow-2xl overflow-hidden my-auto flex flex-col transition-all" style="max-height: 90vh;">
-            
-            {{-- HEADER --}}
-            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0 bg-white">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(0,104,93,0.1);">
-                        <span class="material-icons-outlined text-xl" style="color: #00685d;">visibility</span>
-                    </div>
-                    <div>
-                        <h2 class="font-manrope font-bold text-base" style="color:#191c1e;" id="pdf-modal-title">Pratinjau Surat</h2>
-                        <p class="text-xs" style="color:#6d7a77;">Tampilan struktur asli HTML template</p>
-                    </div>
-                </div>
-                <button onclick="closePdfViewer()" class="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors">
-                    <span class="material-icons-outlined" style="color:#6d7a77;">close</span>
-                </button>
-            </div>
-            
-            {{-- BODY (IFRAME) --}}
-            <div class="relative flex-1 w-full bg-gray-50 p-0 m-0" style="overflow: hidden; min-height: 60vh;">
-                <iframe id="pdf-iframe" src="" class="absolute inset-0 w-full h-full border-0" title="PDF Viewer"></iframe>
-            </div>
-
-            {{-- FOOTER --}}
-            <div class="px-6 py-4 border-t border-gray-100 bg-white flex justify-end shrink-0">
-                <button onclick="closePdfViewer()" class="px-6 py-2.5 rounded-xl text-sm font-semibold" style="background-color: #eceef0; color: #3d4947;">
-                    Tutup Preview
-                </button>
-            </div>
-            
-        </div>
-    </div>
+    {{-- Modal dihapus, diganti window.open --}}
 
 @endsection
 
 @push('scripts')
 <script>
 function openPdfViewer(url, title) {
-    document.getElementById('pdf-modal-title').textContent = title;
-    document.getElementById('pdf-iframe').src = url;
-    const m = document.getElementById('pdf-viewer-modal');
-    m.classList.remove('hidden');
-    m.classList.add('flex');
-    document.body.style.overflow = 'hidden';
+    const w = 800;
+    const h = 800;
+    const left = (screen.width/2)-(w/2);
+    const top = (screen.height/2)-(h/2);
+    window.open(url, 'Preview', 'width='+w+',height='+h+',top='+top+',left='+left+',toolbar=no,menubar=no,scrollbars=yes,resizable=yes');
 }
-function closePdfViewer() {
-    const m = document.getElementById('pdf-viewer-modal');
-    m.classList.add('hidden');
-    m.classList.remove('flex');
-    document.getElementById('pdf-iframe').src = '';
-    document.body.style.overflow = '';
-}
-document.getElementById('pdf-viewer-modal').addEventListener('click', function(e) {
-    if(e.target === this) closePdfViewer();
-});
-document.addEventListener('keydown', e => { if(e.key === 'Escape') closePdfViewer(); });
+// Listeners removed as modal is removed
 </script>
 @endpush

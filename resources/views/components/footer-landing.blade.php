@@ -1,5 +1,16 @@
+@php
+    // Get Top 5 Surat for Footer
+    $top5Surat = \App\Models\Pengajuan::select('jenis_surat', \DB::raw('count(*) as total'))
+        ->groupBy('jenis_surat')
+        ->orderBy('total', 'desc')
+        ->take(5)
+        ->pluck('jenis_surat');
+    
+    if ($top5Surat->isEmpty()) {
+        $top5Surat = collect(['Surat Keterangan Domisili', 'Surat Keterangan Usaha', 'Surat Keterangan Tidak Mampu', 'Surat Pengantar Umum', 'Surat Keterangan Keluarga']);
+    }
+@endphp
 {{-- Footer Landing Page — Civic Curator (Tonal dark, full info) --}}
-{{-- Edit kontak RT, alamat, dan jam operasional di sini --}}
 <footer style="background-color: #2d3133;">
     <div class="max-w-7xl mx-auto px-6 lg:px-8 py-16">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-12">
@@ -14,28 +25,42 @@
                     <span class="font-manrope font-bold text-white">SIMART-06</span>
                 </div>
                 <p class="text-sm text-gray-400 leading-relaxed max-w-xs">
-                    Sistem Manajemen RT digital untuk RT 06 Memudahkan administrasi warga secara transparan dan efisien.
+                    Sistem Manajemen Administrasi Rukun Tetangga (SIMART) digital terpadu untuk RT 06. 
+                    Hadir untuk mempermudah layanan administrasi warga secara transparan, cepat, responsif, dan efisien demi mewujudkan lingkungan yang rukun dan modern.
                 </p>
             </div>
 
             {{-- Navigation --}}
             <div class="md:col-span-2">
-                <h4 class="text-xs font-semibold text-gray-300 uppercase tracking-widest mb-4">Menu</h4>
+                <h4 class="text-xs font-semibold text-gray-300 uppercase tracking-widest mb-4">Menu Warga</h4>
                 <ul class="space-y-3">
-                    <li><a href="#hero" class="text-sm text-gray-400 hover:text-white transition-colors">Beranda</a></li>
-                    <li><a href="#benefits" class="text-sm text-gray-400 hover:text-white transition-colors">Keunggulan</a></li>
-                    <li><a href="#services" class="text-sm text-gray-400 hover:text-white transition-colors">Layanan</a></li>
+                    @if(Auth::check() && Auth::user()->role == 'warga')
+                        <li><a href="{{ route('dashboard') }}" class="text-sm text-gray-400 hover:text-white transition-colors">Beranda Dashboard</a></li>
+                        <li><a href="{{ route('pengajuan.create') }}" class="text-sm text-gray-400 hover:text-white transition-colors">Buat Pengajuan Baru</a></li>
+                        <li><a href="{{ route('warga.template') }}" class="text-sm text-gray-400 hover:text-white transition-colors">Download Template</a></li>
+                        <li><a href="{{ route('warga.riwayat') }}" class="text-sm text-gray-400 hover:text-white transition-colors">Riwayat Pengajuan</a></li>
+                        <li><a href="{{ route('warga.profile') }}" class="text-sm text-gray-400 hover:text-white transition-colors">Pengaturan Akun</a></li>
+                    @else
+                        <li><a href="#hero" class="text-sm text-gray-400 hover:text-white transition-colors">Beranda</a></li>
+                        <li><a href="#benefits" class="text-sm text-gray-400 hover:text-white transition-colors">Keunggulan</a></li>
+                        <li><a href="#services" class="text-sm text-gray-400 hover:text-white transition-colors">Layanan</a></li>
+                        <li><a href="{{ route('login') }}" class="text-sm text-gray-400 hover:text-white transition-colors">Masuk Akun</a></li>
+                        <li><a href="{{ route('register') }}" class="text-sm text-gray-400 hover:text-white transition-colors">Daftar Warga</a></li>
+                    @endif
                 </ul>
             </div>
 
             {{-- Layanan Warga --}}
             <div class="md:col-span-3">
-                <h4 class="text-xs font-semibold text-gray-300 uppercase tracking-widest mb-4">Layanan Warga</h4>
+                <h4 class="text-xs font-semibold text-gray-300 uppercase tracking-widest mb-4">Layanan Terpopuler</h4>
                 <ul class="space-y-3">
-                    <li><a href="#services" class="text-sm text-gray-400 hover:text-white transition-colors">Surat Domisili</a></li>
-                    <li><a href="#services" class="text-sm text-gray-400 hover:text-white transition-colors">Surat Usaha</a></li>
-                    <li><a href="#services" class="text-sm text-gray-400 hover:text-white transition-colors">Administrasi Keluarga</a></li>
-                    <li><a href="#services" class="text-sm text-gray-400 hover:text-white transition-colors">Surat Karakter</a></li>
+                    @foreach($top5Surat as $surat)
+                    <li>
+                        <a href="{{ Auth::check() && Auth::user()->role == 'warga' ? route('warga.template') : '#services' }}" class="text-sm text-gray-400 hover:text-white transition-colors capitalize">
+                            {{ str_replace('_', ' ', $surat) }}
+                        </a>
+                    </li>
+                    @endforeach
                 </ul>
             </div>
 
@@ -60,7 +85,7 @@
                         <svg class="w-4 h-4 mt-0.5 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        Sen–Jum: 08:00 – 17:00
+                        Sen–Jum: 08:00 – 17:00 WITA
                     </li>
                 </ul>
             </div>
@@ -70,8 +95,8 @@
         <div class="border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
             <p class="text-xs text-gray-500">&copy; {{ date('Y') }} SIMART-06. All rights reserved.</p>
             <div class="flex gap-6">
-                <a href="#" class="text-xs text-gray-500 hover:text-gray-300 transition-colors">Privacy Policy</a>
-                <a href="#" class="text-xs text-gray-500 hover:text-gray-300 transition-colors">Terms of Service</a>
+                <a href="{{ route('privacy') }}" class="text-xs text-gray-500 hover:text-gray-300 transition-colors">Privacy Policy</a>
+                <a href="{{ route('terms') }}" class="text-xs text-gray-500 hover:text-gray-300 transition-colors">Terms of Service</a>
                 <a href="#" class="text-xs text-gray-500 hover:text-gray-300 transition-colors">Help Center</a>
             </div>
         </div>
