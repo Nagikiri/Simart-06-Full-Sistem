@@ -96,6 +96,42 @@
                             >
                         </div>
 
+                        {{-- NIK --}}
+                        <div>
+                            <label for="nik" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: #3d4947; letter-spacing: 0.05rem;">
+                                NIK
+                            </label>
+                            <input
+                                id="nik"
+                                type="text"
+                                name="nik"
+                                value="{{ old('nik', auth()->user()->warga->nik ?? '') }}"
+                                placeholder="Masukkan NIK KTP"
+                                required
+                                oninput="updatePreview()"
+                                class="w-full px-4 py-3 rounded-xl text-sm border transition-all focus:ring-2 focus:outline-none @error('nik') border-[#ba1a1a] focus:ring-[#ba1a1a]/10 @else border-[#bcc9c6]/35 focus:border-[#00685d] focus:ring-[#00685d]/10 @enderror"
+                                style="background-color: #fff; color: #191c1e;"
+                            >
+                        </div>
+
+                        {{-- Tempat, Tanggal Lahir --}}
+                        <div>
+                            <label for="tempat_tanggal_lahir" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: #3d4947; letter-spacing: 0.05rem;">
+                                Tempat, Tanggal Lahir
+                            </label>
+                            <input
+                                id="tempat_tanggal_lahir"
+                                type="text"
+                                name="tempat_tanggal_lahir"
+                                value="{{ old('tempat_tanggal_lahir', auth()->user()->warga->tempat_lahir ? auth()->user()->warga->tempat_lahir . ', ' . auth()->user()->warga->tanggal_lahir : '') }}"
+                                placeholder="Contoh: Balikpapan, 17 Agustus 1990"
+                                required
+                                oninput="updatePreview()"
+                                class="w-full px-4 py-3 rounded-xl text-sm border transition-all focus:ring-2 focus:outline-none @error('tempat_tanggal_lahir') border-[#ba1a1a] focus:ring-[#ba1a1a]/10 @else border-[#bcc9c6]/35 focus:border-[#00685d] focus:ring-[#00685d]/10 @enderror"
+                                style="background-color: #fff; color: #191c1e;"
+                            >
+                        </div>
+
                         {{-- Jenis Kelamin --}}
                         <div>
                             <label class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: #3d4947; letter-spacing: 0.05rem;">
@@ -110,6 +146,18 @@
                                     <input type="radio" name="jenis_kelamin" value="Perempuan" onchange="updatePreview()" required {{ old('jenis_kelamin', auth()->user()->warga->gender ?? '') == 'Perempuan' ? 'checked' : '' }}>
                                     <span class="text-sm">Perempuan</span>
                                 </label>
+                            </div>
+                        </div>
+
+                        {{-- Agama & Pekerjaan --}}
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="agama" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: #3d4947; letter-spacing: 0.05rem;">Agama</label>
+                                <input id="agama" type="text" name="agama" value="{{ old('agama', auth()->user()->warga->agama ?? '') }}" placeholder="Agama" required oninput="updatePreview()" class="w-full px-4 py-3 rounded-xl text-sm border transition-all focus:ring-2 focus:outline-none @error('agama') border-[#ba1a1a] focus:ring-[#ba1a1a]/10 @else border-[#bcc9c6]/35 focus:border-[#00685d] focus:ring-[#00685d]/10 @enderror" style="background-color: #fff; color: #191c1e;">
+                            </div>
+                            <div>
+                                <label for="pekerjaan" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: #3d4947; letter-spacing: 0.05rem;">Pekerjaan</label>
+                                <input id="pekerjaan" type="text" name="pekerjaan" value="{{ old('pekerjaan', auth()->user()->warga->pekerjaan ?? '') }}" placeholder="Pekerjaan" required oninput="updatePreview()" class="w-full px-4 py-3 rounded-xl text-sm border transition-all focus:ring-2 focus:outline-none @error('pekerjaan') border-[#ba1a1a] focus:ring-[#ba1a1a]/10 @else border-[#bcc9c6]/35 focus:border-[#00685d] focus:ring-[#00685d]/10 @enderror" style="background-color: #fff; color: #191c1e;">
                             </div>
                         </div>
 
@@ -147,6 +195,8 @@
                                 style="background-color: #fff; color: #191c1e;"
                             >
                         </div>
+                        {{-- Dynamic Fields Container (Auto-generated based on selected template) --}}
+                        <div id="dynamicFieldsContainer" class="space-y-5 mt-2"></div>
                     </div>
                 </div>
 
@@ -190,7 +240,7 @@
                         <h2 class="font-manrope font-bold text-sm uppercase tracking-wider" style="color: #191c1e;">Pratinjau Surat</h2>
                     </div>
 
-                    <div id="previewContainer" class="bg-white rounded-xl shadow-sm p-6 overflow-y-auto w-full max-h-[800px] flex items-center justify-center" style="min-height: 400px;">
+                    <div id="previewContainer" class="bg-white rounded-xl shadow-sm p-4 lg:p-6 overflow-auto w-full max-h-[800px] flex items-center justify-center" style="min-height: 400px;">
                         <p class="text-sm text-center" style="color: #6d7a77;">Pilih jenis surat terlebih dahulu untuk melihat pratinjau kertas HVS.</p>
                     </div>
                 </div>
@@ -242,8 +292,26 @@
             .then(data => {
                 if(data.content) {
                     rawHtmlTemplate = data.content;
+                    
+                    // INJEKSI PINTAR (MAGIC)
+                    // Cari kurung kosong dan injeksi [NAMA_RT] dan [NAMA_PEMOHON] secara in-memory
+                    // Sehingga form isian akan otomatis digenerate persis seperti Surat Pernyataan Gaib (Template 8)
+                    const bracketRegex = /\(\s*(?:&emsp;|&nbsp;|\.|_|\s|&#160;|<sup[^>]*>.*?<\/sup>){1,}\s*\)/ig;
+                    let matches = rawHtmlTemplate.match(bracketRegex) || [];
+                    
+                    if (matches.length === 1) {
+                        rawHtmlTemplate = rawHtmlTemplate.replace(/\(\s*(?:&emsp;|&nbsp;|\.|_|\s|&#160;|<sup[^>]*>.*?<\/sup>){1,}\s*\)/i, '([NAMA_PEMOHON])');
+                    } else if (matches.length >= 2) {
+                        rawHtmlTemplate = rawHtmlTemplate.replace(/\(\s*(?:&emsp;|&nbsp;|\.|_|\s|&#160;|<sup[^>]*>.*?<\/sup>){1,}\s*\)/i, '([NAMA_RT])');
+                        rawHtmlTemplate = rawHtmlTemplate.replace(/\(\s*(?:&emsp;|&nbsp;|\.|_|\s|&#160;|<sup[^>]*>.*?<\/sup>){1,}\s*\)/i, '([NAMA_PEMOHON])');
+                    }
+                    
+                    // Ganti "Ketua RT … Kelurahan" menjadi "Ketua RT [NOMOR_RT] Kelurahan"
+                    rawHtmlTemplate = rawHtmlTemplate.replace(/Ketua RT\s*(?:…|\.{3,})\s*Kelurahan/gi, 'Ketua RT [NOMOR_RT] Kelurahan');
+                    
                     document.getElementById('formPemohonCard').classList.remove('hidden');
                     document.getElementById('actionButtons').classList.remove('hidden');
+                    generateDynamicFields();
                     updatePreview(); // Apply inputs
                 }
             })
@@ -252,27 +320,122 @@
             });
     }
 
+    function generateDynamicFields() {
+        const container = document.getElementById('dynamicFieldsContainer');
+        container.innerHTML = '';
+        
+        const matches = rawHtmlTemplate.match(/\[([A-Z0-9_]+)\]/g) || [];
+        const uniquePlaceholders = [...new Set(matches.map(m => m.replace(/\[|\]/g, '')))];
+        
+        // Static fields that already exist in the form
+        const staticFields = [
+            'NAMA', 'NAMA_LENGKAP', 'NAMA_WARGA', 'NIK', 'TTL', 'TEMPAT_LAHIR', 'TANGGAL_LAHIR', 
+            'JENIS_KELAMIN', 'AGAMA', 'PEKERJAAN', 'ALAMAT', 'ALAMAT_LENGKAP', 'ALAMAT_WARGA', 
+            'KEPERLUAN', 'TUJUAN_SURAT', 'KEPERLUAN_SURAT', 'NOMOR_RT'
+        ];
+        
+        uniquePlaceholders.forEach(placeholder => {
+            if (!staticFields.includes(placeholder)) {
+                // Generate a pretty label from the placeholder
+                let labelText = placeholder.replace(/_/g, ' ').toLowerCase();
+                labelText = labelText.replace(/\b\w/g, l => l.toUpperCase());
+                let inputPlaceholder = `Masukkan ${labelText}`;
+                
+                // Override khusus untuk nama penandatangan agar lebih jelas
+                if (placeholder === 'NAMA_RT') {
+                    labelText = 'Nama Ketua RT (Untuk Tanda Tangan)';
+                    inputPlaceholder = 'Contoh: Junnior Pollaris';
+                } else if (placeholder === 'NAMA_PEMOHON' || placeholder === 'NAMA_TTD') {
+                    labelText = 'Nama Pembuat Pernyataan (Untuk Tanda Tangan)';
+                    inputPlaceholder = 'Contoh: Budi Santoso';
+                }
+                
+                const fieldHtml = `
+                    <div>
+                        <label for="dynamic_${placeholder}" class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: #3d4947; letter-spacing: 0.05rem;">
+                            ${labelText}
+                        </label>
+                        <input
+                            id="dynamic_${placeholder}"
+                            type="text"
+                            name="field_${placeholder}"
+                            placeholder="${inputPlaceholder}"
+                            required
+                            oninput="updatePreview()"
+                            class="w-full px-4 py-3 rounded-xl text-sm border transition-all focus:ring-2 focus:outline-none border-[#bcc9c6]/35 focus:border-[#00685d] focus:ring-[#00685d]/10"
+                            style="background-color: #fff; color: #191c1e;"
+                        >
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', fieldHtml);
+            }
+        });
+    }
+
     function updatePreview() {
         if(!rawHtmlTemplate) return;
 
         let html = rawHtmlTemplate;
         
-        // Get values
-        const nama = document.getElementById('nama_lengkap').value || '[NAMA_WARGA]';
-        const alamat = document.getElementById('alamat').value || '[ALAMAT_WARGA]';
-        const tujuan = document.getElementById('tujuan_surat').value || '[TUJUAN_SURAT]';
+        // Get Static Values
+        const nama = document.getElementById('nama_lengkap').value || '[NAMA]';
+        const alamat = document.getElementById('alamat').value || '[ALAMAT]';
+        const tujuan = document.getElementById('tujuan_surat').value || '[KEPERLUAN]';
         const genderEl = document.querySelector('input[name="jenis_kelamin"]:checked');
         const jk = genderEl ? genderEl.value : '[JENIS_KELAMIN]';
 
-        // Replace placeholders
-        html = html.replace(/\[NAMA_WARGA\]/g, `<span style="color:#00685d; font-weight:bold;">${nama}</span>`);
-        html = html.replace(/\[ALAMAT_WARGA\]/g, `<span style="color:#00685d; font-weight:bold;">${alamat}</span>`);
-        html = html.replace(/\[JENIS_KELAMIN\]/g, `<span style="color:#00685d; font-weight:bold;">${jk}</span>`);
-        html = html.replace(/\[TUJUAN_SURAT\]/g, `<span style="color:#00685d; font-weight:bold;">${tujuan}</span>`);
+        const nik = document.getElementById('nik')?.value || '[NIK]';
+        const ttl = document.getElementById('tempat_tanggal_lahir')?.value || '[TTL]';
+        const agama = document.getElementById('agama')?.value || '[AGAMA]';
+        const pekerjaan = document.getElementById('pekerjaan')?.value || '[PEKERJAAN]';
+
+        // Apply Static Replacements (covers multiple variations used in different templates)
+        const staticMappings = {
+            'NAMA': nama, 'NAMA_LENGKAP': nama, 'NAMA_WARGA': nama,
+            'ALAMAT': alamat, 'ALAMAT_LENGKAP': alamat, 'ALAMAT_WARGA': alamat,
+            'JENIS_KELAMIN': jk,
+            'KEPERLUAN': tujuan, 'TUJUAN_SURAT': tujuan, 'KEPERLUAN_SURAT': tujuan,
+            'NIK': nik, 'TTL': ttl, 'AGAMA': agama, 'PEKERJAAN': pekerjaan,
+            'NOMOR_RT': '06'
+        };
+
+        for (const [placeholder, val] of Object.entries(staticMappings)) {
+            const regex = new RegExp(`\\[${placeholder}\\]`, 'g');
+            html = html.replace(regex, `<span style="color:#00685d; font-weight:bold;">${val}</span>`);
+        }
+
+        // Apply Dynamic Replacements
+        const matches = rawHtmlTemplate.match(/\[([A-Z0-9_]+)\]/g) || [];
+        const uniquePlaceholders = [...new Set(matches.map(m => m.replace(/\[|\]/g, '')))];
+        
+        const staticFields = Object.keys(staticMappings);
+
+        uniquePlaceholders.forEach(placeholder => {
+            if (!staticFields.includes(placeholder)) {
+                const el = document.getElementById('dynamic_' + placeholder);
+                const val = el && el.value ? el.value : `[${placeholder}]`;
+                const regex = new RegExp(`\\[${placeholder}\\]`, 'g');
+                html = html.replace(regex, `<span style="color:#00685d; font-weight:bold;">${val}</span>`);
+            }
+        });
+
+        // Prepare Final HTML to send to backend for perfect PDF rendering (only if we want to save final HTML directly)
+        // Here we create a hidden input to send the computed HTML to the controller
+        let finalHtmlInput = document.getElementById('_html_final');
+        if(!finalHtmlInput) {
+            finalHtmlInput = document.createElement('input');
+            finalHtmlInput.type = 'hidden';
+            finalHtmlInput.name = '_html_final';
+            finalHtmlInput.id = '_html_final';
+            document.getElementById('pengajuanForm').appendChild(finalHtmlInput);
+        }
+        // Save the raw version of the HTML but with plain text (without spans) for backend processing if preferred. 
+        // We'll leave it as is and the controller will do it, or we pass the computed one.
+        // Actually, the controller replaces fields automatically using `data_tambahan`. So we don't strictly need `_html_final`.
 
         const previewContainer = document.getElementById('previewContainer');
-        // Clear flex center styles for proper HTML render
-        previewContainer.className = "bg-white rounded-xl shadow-md p-2 lg:p-8 overflow-y-auto w-full border border-gray-200 transform scale-90 lg:scale-100 origin-top";
+        // Clear flex center styles for proper HTML render, make it fully responsive with overflow-auto
+        previewContainer.className = "bg-white rounded-xl shadow-md p-3 lg:p-8 overflow-auto w-full border border-gray-200";
         previewContainer.innerHTML = html;
     }
 
